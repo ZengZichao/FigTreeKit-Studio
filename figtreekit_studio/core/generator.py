@@ -41,9 +41,36 @@ class GenResult:
     error_key: str = ""     # 前端 i18n 错误码（见 app.js I18N.err.*）
     error_detail: str = ""  # 可选技术细节（stderr 尾部等）
     log: str = ""
+    is_user_work_dir: bool = False  # True 表示 work_dir 由用户指定，不应自动清理
 
 
 # 参数以 list 方式传递给 subprocess.run / runpy，不经过 shell 解析，故无需转义/白名单。
+
+
+def _apply_label_color(nex_path: str, label_color: str) -> None:
+    """
+    为所有末端节点添加 !color 注释，并将 tipLabels.colorAttribute 设为 "!color"，
+    使 FigTree JAR 在 headless 渲染时仍能识别标签颜色。
+
+    由于 FigTree 命令行渲染器不会读取 appearance.foregroundColour /
+    tipLabels.colorAttribute 中的字面颜色，必须把标签颜色以节点注释形式写入。
+    失败时静默忽略，避免阻断生成流程。
+    """
+    if not label_color:
+        return
+    try:
+        import figtreekit
+
+        styler = figtreekit.FigTreeStyler(nex_path)
+        tree = styler._parse_tree_with_biopython(styler._tree_content)
+        if tree is None:
+            return
+        for tip in (t.name for t in tree.get_terminals() if t.name):
+            styler.set_clade_color([tip], label_color)
+        styler.set_tip_labels(color_attribute="!color")
+        styler.export(nex_path)
+    except Exception:
+        pass
 
 
 def _run_figtreekit_inprocess(args: list[str], timeout: int = 0) -> tuple[int, str, bool]:
@@ -120,8 +147,26 @@ def generate_nex(params: ParamSpec | dict[str, Any], *, timeout: int = 120) -> G
         return GenResult(ok=False, error="请提供树文件或 Newick 文本",
                          error_key="no_tree")
 
-    # 2) 写树到临时文件
-    work_dir = tempfile.mkdtemp(prefix="ftk_studio_")
+    # 2) 确定工作目录
+    is_user_work_dir = bool(params.work_dir)
+    if is_user_work_dir:
+        # 在用户指定目录下为本次渲染创建唯一子目录，避免覆盖
+        import uuid
+        base_dir = os.path.expanduser(params.work_dir.strip())
+        run_dir = f"ftk_run_{uuid.uuid4().hex[:8]}"
+        work_dir = os.path.join(base_dir, run_dir)
+        try:
+            os.makedirs(work_dir, exist_ok=True)
+        except Exception as e:
+            return GenResult(
+                ok=False,
+                error=f"无法创建工作目录: {work_dir}\n{e}",
+                error_key="work_dir_invalid",
+                error_detail=str(e),
+            )
+    else:
+        work_dir = tempfile.mkdtemp(prefix="ftk_studio_")
+
     tree_path = os.path.join(work_dir, "input.tre")
     nex_path = os.path.join(work_dir, "output.nex")
     with open(tree_path, "w", encoding="utf-8") as f:
@@ -139,6 +184,7 @@ def generate_nex(params: ParamSpec | dict[str, Any], *, timeout: int = 120) -> G
         if _to:
             return GenResult(
                 ok=False, work_dir=work_dir, tree_path=tree_path,
+                is_user_work_dir=is_user_work_dir,
                 error=f"figtreekit 执行超时（>{timeout}s，树可能过大）",
                 error_key="figtreekit_timeout", error_detail=f">{timeout}s",
             )
@@ -146,12 +192,15 @@ def generate_nex(params: ParamSpec | dict[str, Any], *, timeout: int = 120) -> G
             tail = _log[-1500:] if _log else "(no output)"
             return GenResult(
                 ok=False, work_dir=work_dir, tree_path=tree_path,
+                is_user_work_dir=is_user_work_dir,
                 error=f"figtreekit 生成失败:\n{tail}",
                 error_key="figtreekit_failed", error_detail=tail, log=_log,
             )
+        _apply_label_color(nex_path, params.label_color)
         return GenResult(
             ok=True, nex_path=nex_path, tree_path=tree_path,
             work_dir=work_dir, cli_args=cli_args, log=_log,
+            is_user_work_dir=is_user_work_dir,
         )
 
     try:
@@ -161,6 +210,7 @@ def generate_nex(params: ParamSpec | dict[str, Any], *, timeout: int = 120) -> G
     except subprocess.TimeoutExpired:
         return GenResult(
             ok=False, work_dir=work_dir, tree_path=tree_path,
+            is_user_work_dir=is_user_work_dir,
             error=f"figtreekit 执行超时（>{timeout}s，树可能过大）",
             error_key="figtreekit_timeout", error_detail=f">{timeout}s",
         )
@@ -170,11 +220,14 @@ def generate_nex(params: ParamSpec | dict[str, Any], *, timeout: int = 120) -> G
         tail = log[-1500:] if log else "(no output)"
         return GenResult(
             ok=False, work_dir=work_dir, tree_path=tree_path,
+            is_user_work_dir=is_user_work_dir,
             error=f"figtreekit 生成失败:\n{tail}",
             error_key="figtreekit_failed", error_detail=tail, log=log,
         )
 
+    _apply_label_color(nex_path, params.label_color)
     return GenResult(
         ok=True, nex_path=nex_path, tree_path=tree_path,
         work_dir=work_dir, cli_args=cli_args, log=log,
+        is_user_work_dir=is_user_work_dir,
     )

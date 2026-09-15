@@ -15,7 +15,7 @@ a = Analysis(
     # webview.platforms.cocoa: pywebview 按平台动态导入，需要显式声明
     # figtreekit: 仅在函数内 import + runpy 动态执行，需要显式声明
     # figtreekit.__main__: runpy.run_module 需要，PyInstaller 默认不打包包级 __main__
-    hiddenimports=['webview.platforms.cocoa', 'figtreekit', 'figtreekit.__main__'],
+    hiddenimports=['webview.platforms.cocoa', 'figtreekit', 'figtreekit.__main__', 'PIL', 'PIL.Image'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -59,8 +59,8 @@ app = BUNDLE(
     info_plist={
         'CFBundleDisplayName': 'FigTreeKit Studio',
         'CFBundleName': 'FigTreeKit Studio',
-        'CFBundleShortVersionString': '0.1.0',
-        'CFBundleVersion': '0.1.0',
+        'CFBundleShortVersionString': '0.1.1',
+        'CFBundleVersion': '0.1.1',
         'NSHumanReadableCopyright': 'Copyright 2026 Zeng Zichao, GPL-2.0-or-later',
         'NSHighResolutionCapable': True,
         'LSMinimumSystemVersion': '10.15',

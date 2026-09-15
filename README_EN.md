@@ -6,7 +6,7 @@ FigTreeKit Studio is the visual front-end for [`figtreekit`](https://pypi.org/pr
 
 [🇨🇳 中文](README.md) · 🇬🇧 English
 
-**v0.1.0 — First open-source release**
+**v0.1.1 — Maintenance update**
 - 🖥️ **Standalone desktop app**: runs in a native window (pywebview), no browser required
 - 🌐 **Bilingual UI (Chinese / English)**: one-click switch (top-right `EN / 中文`), auto-remembered, defaults to system language on first launch
 - 🌿 **SVG vector logo**: minimalist black/white/grey phylogenetic tree (`static/logo.svg`), also used as the app icon
@@ -31,7 +31,7 @@ pip install figtreekit-studio
 
 Verified on macOS; Windows/Linux should be compatible in principle (the UI layer avoids native controls).
 
-> ⚠️ This project is in the Alpha stage (v0.1.0); APIs and UI may change across versions.
+> ⚠️ This project is in the Alpha stage (v0.1.1); APIs and UI may change across versions.
 
 ---
 
@@ -97,7 +97,7 @@ Corresponding JSON config (directly consumable by `figtreekit --config`):
 
 ## Features
 
-### Current version (v0.1.0)
+### Current version (v0.1.1)
 - ✅ Desktop app: native window, no browser dependency (pywebview / WKWebView)
 - ✅ Bilingual UI, one-click switch with memory
 - ✅ SVG vector logo (minimalist black/white/grey) + matching app icon

@@ -20,6 +20,26 @@ def free_port(host: str = "127.0.0.1") -> int:
     return port
 
 
+class _StudioApi:
+    """暴露给前端 JS 调用的最小 API（仅桌面窗口模式可用）。"""
+
+    def select_folder(self) -> str:
+        """打开原生文件夹选择对话框，返回选中路径；取消/失败返回空字符串。"""
+        try:
+            import webview
+            # 取当前主窗口打开对话框
+            window = webview.active_window() or (webview.windows[0] if webview.windows else None)
+            if window is None:
+                return ""
+            selected = window.create_file_dialog(webview.FOLDER_DIALOG)
+            # pywebview 返回的是 list 或 str
+            if isinstance(selected, list):
+                return selected[0] if selected else ""
+            return selected or ""
+        except Exception:
+            return ""
+
+
 def run_desktop(
     host: str = "127.0.0.1",
     port: int | None = None,
@@ -49,7 +69,8 @@ def run_desktop(
     print(f"[FigTreeKit Studio] {url}")
     try:
         window = webview.create_window(
-            title, url, width=width, height=height, min_size=(1080, 680)
+            title, url, width=width, height=height, min_size=(1080, 680),
+            js_api=_StudioApi(),
         )
         webview.start()
     except Exception as e:

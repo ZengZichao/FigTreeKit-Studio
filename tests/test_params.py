@@ -118,6 +118,7 @@ class TestToCliArgs:
     def test_full_params(self):
         """全参数组合不应报错。"""
         p = ParamSpec(
+            work_dir="/tmp/ftk_test",
             layout="polar",
             tip_labels="hide",
             align_tip_labels=True,
@@ -246,6 +247,20 @@ class TestConfigKeySchema:
                 f"Layout '{layout}' should produce key '{expected_key}'"
             )
             assert config[expected_key] is True
+
+    def test_align_tip_labels_false_explicitly_disables(self):
+        """未勾选 align_tip_labels 时应显式写入 False，覆盖 figtreekit 默认值 True。"""
+        for layout, expected_key in [
+            ("rectilinear", "rectilinearLayout.alignTipLabels"),
+            ("polar", "polarLayout.alignTipLabels"),
+            ("radial", "radialLayout.alignTipLabels"),
+        ]:
+            p = ParamSpec(layout=layout, align_tip_labels=False)
+            config = to_config_dict(p)
+            assert config[expected_key] is False
+            args = to_cli_args(p)
+            assert "--set" in args
+            assert f"{expected_key}=false" in args
 
 
 class TestCurvatureNullSafety:

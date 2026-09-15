@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-09-15
+
+### Added
+- 必填工作路径：生成预览前必须指定工作目录，中间文件保留在 `ftk_run_xxxxxxxx` 子目录
+- 工作路径浏览按钮：桌面应用模式下调用原生文件夹选择器
+- 实时预览自动触发：参数变化后自动防抖渲染，无需重复点击生成按钮
+- 输入框统一高度 34px
+- GitHub Actions CI 工作流（macOS + Python 3.12 + Java 17）
+
+### Changed
+- "前景色" 改名为 "分支颜色"
+- 选项卡中的 "关" 统一改为 "显示 / 隐藏"
+- 布局选项中文改为纯中文（矩形树 / 极坐标 / 放射状）
+- 分类学级别中文改为纯中文（域 / 门 / 纲 / 目 / 科 / 属 / 种）
+- 图例位置中文改为纯中文（底部 / 顶部 / 左侧 / 右侧）
+- 曲率默认值从 `-1` 改为 `0`，标签改为 "曲率"，placeholder 说明 `0=直角，>0=圆角`
+- 折叠级别 / 折叠样式改为同一行水平对齐
+- CLI / JSON 导出标题去除带圈数字
+- 健康检查状态图标改为文字（正常/异常，英文 OK/FAIL）
+
+### Fixed
+- 左侧栏颜色参数未传递到实时预览（背景色/前景色/标签色现在生效）
+- 未设置背景色时预览显示黑色（改为默认白色背景）
+- 曲率设置无效的认知问题（实际有效，UI 提示更清晰）
+- 径向对齐标签点不点都一样（figtreekit 默认 True，未勾选时显式写入 False）
+- 中英界面混排问题
+- 界面 emoji 过多
+- 前景色渲染测试对抗锯齿过渡色过于严格
+
 ## [0.1.0] - 2026-09-15
 
 ### Added

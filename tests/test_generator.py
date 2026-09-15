@@ -3,6 +3,7 @@ test_generator — figtreekit CLI 调用正确性。
 """
 
 import os
+import tempfile
 import pytest
 from figtreekit_studio.core.generator import generate_nex, GenResult
 from figtreekit_studio.core.params import ParamSpec
@@ -72,3 +73,14 @@ class TestGenerateNex:
         r = generate_nex(p)
         assert r.ok, r.error
         assert os.path.exists(r.nex_path)
+
+    def test_user_work_dir(self):
+        """指定 work_dir 时，中间文件应保留在用户目录下。"""
+        base = tempfile.mkdtemp(prefix="ftk_user_")
+        p = ParamSpec(tree_text=SIMPLE_TREE, layout="rectilinear", work_dir=base)
+        r = generate_nex(p)
+        assert r.ok, f"Expected ok, got error: {r.error}"
+        assert r.is_user_work_dir is True
+        assert os.path.exists(r.nex_path)
+        assert r.work_dir.startswith(base)
+        assert os.path.exists(os.path.join(r.work_dir, "input.tre"))

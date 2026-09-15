@@ -4,11 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "figtreekit-studio"
-version = "0.1.0"
+version = "0.1.1"
 description = "Visual front-end + reproducible script generator for figtreekit"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = ["figtreekit>=1.1.2", "pywebview>=5.0"]
+dependencies = ["figtreekit>=1.1.2", "pywebview>=5.0", "Pillow>=10.0"]
+optional-dependencies = { dev = ["pytest>=8.0"] }
 license = { text = "GPL-2.0-or-later" }
 authors = [{ name = "Zeng Zichao" }]
 keywords = ["phylogenetics", "figtree", "visualization", "tree", "figtreekit"]

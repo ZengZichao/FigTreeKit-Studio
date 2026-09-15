@@ -149,9 +149,10 @@ label {
   color: var(--mut);
   font-size: 11px;
 }
-textarea, select, input[type=text], input[type=number], input[type=file] {
+select, input[type=text], input[type=number], input[type=file] {
   width: 100%;
-  padding: 7px 10px;
+  height: 34px;
+  padding: 6px 10px;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
   font-size: 13px;
@@ -161,6 +162,15 @@ textarea, select, input[type=text], input[type=number], input[type=file] {
   transition: border-color 0.15s;
 }
 textarea {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  background: #fff;
+  color: var(--ink);
+  font-family: inherit;
+  transition: border-color 0.15s;
   height: 100px;
   resize: vertical;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -177,6 +187,7 @@ textarea:focus-visible, select:focus-visible, input:focus-visible {
 }
 .row {
   display: flex;
+  align-items: flex-start;
   gap: 10px;
 }
 .row > div {
@@ -203,6 +214,31 @@ textarea:focus-visible, select:focus-visible, input:focus-visible {
   font-size: 11px;
   color: var(--mut);
   margin-top: 3px;
+}
+
+/* work dir input row */
+.workdir-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.workdir-row input[type=text] {
+  flex: 1;
+}
+.workdir-row .btn-sm {
+  padding: 6px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--ink);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.workdir-row .btn-sm:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 /* color picker row */
@@ -280,7 +316,7 @@ textarea:focus-visible, select:focus-visible, input:focus-visible {
 
 .preview {
   min-height: 300px;
-  background: #fafafa;
+  background: #ffffff;
   border: 1px dashed var(--line-strong);
   border-radius: var(--radius-sm);
   display: flex;
@@ -305,6 +341,13 @@ textarea:focus-visible, select:focus-visible, input:focus-visible {
   font-size: 13px;
   margin-top: 10px;
   white-space: pre-wrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.saved-path {
+  color: var(--mut);
+  font-size: 12px;
+  margin-top: 8px;
+  word-break: break-all;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 

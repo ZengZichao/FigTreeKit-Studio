@@ -173,12 +173,43 @@ def _health_check() -> dict:
 def _handle_generate(params_dict: dict) -> dict:
     """完整生成流程：generator → renderer → exporter。"""
     params = ParamSpec.from_dict(params_dict)
+
+    # 0) 工作路径校验
+    work_dir_input = (params.work_dir or "").strip()
+    if not work_dir_input:
+        return {
+            "ok": False, "image": None, "command": "", "config_json": "",
+            "error": "请指定工作路径",
+            "error_key": "no_work_dir",
+            "error_detail": "",
+        }
+    expanded = os.path.expanduser(work_dir_input)
+    if not os.path.isdir(expanded):
+        try:
+            os.makedirs(expanded, exist_ok=True)
+        except Exception as e:
+            return {
+                "ok": False, "image": None, "command": "", "config_json": "",
+                "error": f"无法创建工作路径: {expanded}",
+                "error_key": "work_dir_invalid",
+                "error_detail": str(e),
+            }
+    if not os.access(expanded, os.W_OK):
+        return {
+            "ok": False, "image": None, "command": "", "config_json": "",
+            "error": f"工作路径不可写: {expanded}",
+            "error_key": "work_dir_invalid",
+            "error_detail": "",
+        }
+
     work_dir = None
+    is_user_work_dir = False
 
     try:
         # 1) 生成 .nex
         gen = generate_nex(params)
         work_dir = gen.work_dir or None
+        is_user_work_dir = gen.is_user_work_dir
         if not gen.ok:
             return {
                 "ok": False, "image": None, "command": "", "config_json": "",
@@ -192,6 +223,9 @@ def _handle_generate(params_dict: dict) -> dict:
             fmt=params.render_format or "PNG",
             width=params.width or 1600,
             height=params.height or 1000,
+            bg_color=params.bg_color,
+            foreground_color=params.foreground_color,
+            label_color=params.label_color,
         )
         if not rend.ok:
             return {
@@ -209,11 +243,12 @@ def _handle_generate(params_dict: dict) -> dict:
             "image": rend.image,
             "command": command,
             "config_json": config_json,
+            "work_dir": work_dir,
             "error": "",
         }
     finally:
-        # 生成后清理临时工作目录（图片已转 base64 返回，无需保留）
-        if work_dir:
+        # 仅系统临时目录在生成后自动清理；用户指定目录保留
+        if work_dir and not is_user_work_dir:
             import shutil
             shutil.rmtree(work_dir, ignore_errors=True)
 

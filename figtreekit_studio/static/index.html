@@ -26,7 +26,16 @@
   <!-- 左栏：调参表单 -->
   <div class="panel left">
     <div class="section">
-      <h3 data-i18n="secTree">📂 树输入</h3>
+      <h3 data-i18n="secWorkDir">工作路径</h3>
+      <div class="workdir-row">
+        <input type="text" id="work_dir" data-i18n-ph="workDirPh" placeholder="例如：/Users/xxx/Documents/FigTreeKit" class="full">
+        <button id="work_dir_browse" class="btn-sm" type="button" data-i18n="workDirBrowse">浏览…</button>
+      </div>
+      <div class="hint" data-i18n="workDirHint">生成前后的中间文件（input.tre、output.nex、output.* 等）将保留在该目录。</div>
+    </div>
+
+    <div class="section">
+      <h3 data-i18n="secTree">树输入</h3>
       <label for="tree_text" data-i18n="treeText">Newick / Nexus 文本</label>
       <textarea id="tree_text" data-i18n-ph="treeTextPh" placeholder="粘贴 Newick 或 Nexus 树文本…" spellcheck="false">((A:0.1,B:0.2):0.3,(C:0.4,D:0.5):0.6);</textarea>
       <div class="hint" data-i18n="treeHint">直接粘贴含 GTDB 分类标签的树可驱动自动配色/折叠。</div>
@@ -35,17 +44,17 @@
     </div>
 
     <div class="section">
-      <h3 data-i18n="secLayout">🔀 布局</h3>
+      <h3 data-i18n="secLayout">布局</h3>
       <label for="layout" data-i18n="layout">布局类型</label>
       <select id="layout">
-        <option value="rectilinear" data-i18n="layoutRect">rectilinear（矩形树）</option>
-        <option value="polar" data-i18n="layoutPolar">polar（极坐标）</option>
-        <option value="radial" data-i18n="layoutRadial">radial（放射状）</option>
+        <option value="rectilinear" data-i18n="layoutRect">矩形树</option>
+        <option value="polar" data-i18n="layoutPolar">极坐标</option>
+        <option value="radial" data-i18n="layoutRadial">放射状</option>
       </select>
       <label for="tip_labels" data-i18n="tipLabels">末端标签</label>
       <select id="tip_labels">
-        <option value="show" data-i18n="optShow">显示 show</option>
-        <option value="hide" data-i18n="optHide">隐藏 hide</option>
+        <option value="show" data-i18n="optShow">显示</option>
+        <option value="hide" data-i18n="optHide">隐藏</option>
       </select>
       <label class="checkbox-row">
         <input type="checkbox" id="align_tip_labels">
@@ -54,7 +63,7 @@
     </div>
 
     <div class="section">
-      <h3 data-i18n="secAppearance">🎨 外观</h3>
+      <h3 data-i18n="secAppearance">外观</h3>
       <div class="row">
         <div>
           <label for="bg_color" data-i18n="bgColor">背景色</label>
@@ -70,9 +79,9 @@
       </div>
       <div class="row">
         <div>
-          <label for="foreground_color" data-i18n="fgColor">前景色</label>
+          <label for="foreground_color" data-i18n="fgColor">分支颜色</label>
           <div class="color-row">
-            <input type="color" id="fg_color_picker" value="#000000" data-i18n-aria="fgColor" aria-label="前景色">
+            <input type="color" id="fg_color_picker" value="#000000" data-i18n-aria="fgColor" aria-label="分支颜色">
             <input type="text" id="foreground_color" value="#000000" placeholder="#000000" class="color-text">
           </div>
         </div>
@@ -99,47 +108,47 @@
           <label for="font_style" data-i18n="fontStyle">字体样式</label>
           <select id="font_style">
             <option value="" data-i18n="optDefault">默认</option>
-            <option value="plain">plain</option>
-            <option value="bold">bold</option>
-            <option value="italic">italic</option>
-            <option value="bold-italic">bold-italic</option>
+            <option value="plain" data-i18n="fontPlain">常规</option>
+            <option value="bold" data-i18n="fontBold">粗体</option>
+            <option value="italic" data-i18n="fontItalic">斜体</option>
+            <option value="bold-italic" data-i18n="fontBoldItalic">粗斜体</option>
           </select>
         </div>
         <div>
-          <label for="curvature" data-i18n="curvature">曲率 (矩形树)</label>
-          <input type="number" id="curvature" value="-1" step="1" min="-1" data-i18n-ph="curvaturePh" placeholder="-1=默认">
+          <label for="curvature" data-i18n="curvature">曲率</label>
+          <input type="number" id="curvature" value="0" step="1" min="0" data-i18n-ph="curvaturePh" placeholder="0=直角，>0=圆角">
         </div>
       </div>
     </div>
 
     <div class="section">
-      <h3 data-i18n="secTaxonomy">🧬 分类学</h3>
+      <h3 data-i18n="secTaxonomy">分类学</h3>
       <label for="auto_color_rank" data-i18n="autoColorRank">自动配色级别</label>
       <select id="auto_color_rank">
         <option value="" data-i18n="optNone" selected>（无）</option>
-        <option value="domain" data-i18n="rankDomain">domain（域）</option>
-        <option value="phylum" data-i18n="rankPhylum">phylum（门）</option>
-        <option value="class" data-i18n="rankClass">class（纲）</option>
-        <option value="order" data-i18n="rankOrder">order（目）</option>
-        <option value="family" data-i18n="rankFamily">family（科）</option>
-        <option value="genus" data-i18n="rankGenus">genus（属）</option>
-        <option value="species" data-i18n="rankSpecies">species（种）</option>
+        <option value="domain" data-i18n="rankDomain">域</option>
+        <option value="phylum" data-i18n="rankPhylum">门</option>
+        <option value="class" data-i18n="rankClass">纲</option>
+        <option value="order" data-i18n="rankOrder">目</option>
+        <option value="family" data-i18n="rankFamily">科</option>
+        <option value="genus" data-i18n="rankGenus">属</option>
+        <option value="species" data-i18n="rankSpecies">种</option>
       </select>
-      <label for="collapse_rank" data-i18n="collapseRank">折叠级别</label>
       <div class="row">
         <div>
+          <label for="collapse_rank" data-i18n="collapseRank">折叠级别</label>
           <select id="collapse_rank">
             <option value="" data-i18n="optNone">（无）</option>
-            <option value="phylum" data-i18n="rankPhylum">phylum</option>
-            <option value="class" data-i18n="rankClass">class</option>
-            <option value="order" data-i18n="rankOrder">order</option>
+            <option value="phylum" data-i18n="rankPhylum">门</option>
+            <option value="class" data-i18n="rankClass">纲</option>
+            <option value="order" data-i18n="rankOrder">目</option>
           </select>
         </div>
         <div>
           <label for="collapse_style" data-i18n="collapseStyle">折叠样式</label>
           <select id="collapse_style">
-            <option value="collapse">collapse</option>
-            <option value="cartoon">cartoon</option>
+            <option value="collapse" data-i18n="collapseStyleCollapse">折叠</option>
+            <option value="cartoon" data-i18n="collapseStyleCartoon">卡通</option>
           </select>
         </div>
       </div>
@@ -148,19 +157,19 @@
     </div>
 
     <div class="section">
-      <h3 data-i18n="secScale">📏 刻度与标签</h3>
+      <h3 data-i18n="secScale">刻度与标签</h3>
       <div class="row">
         <div>
           <label for="scale_axis" data-i18n="scaleAxis">刻度轴</label>
           <select id="scale_axis">
-            <option value="" data-i18n="optOff">关</option>
+            <option value="hide" data-i18n="optHideShort">隐藏</option>
             <option value="show" data-i18n="optShowShort">显示</option>
           </select>
         </div>
         <div>
           <label for="scale_bar" data-i18n="scaleBar">比例尺</label>
           <select id="scale_bar">
-            <option value="" data-i18n="optOff">关</option>
+            <option value="hide" data-i18n="optHideShort">隐藏</option>
             <option value="show" data-i18n="optShowShort">显示</option>
           </select>
         </div>
@@ -169,9 +178,8 @@
         <div>
           <label for="node_labels" data-i18n="nodeLabels">节点标签</label>
           <select id="node_labels">
-            <option value="" data-i18n="optOff">关</option>
-            <option value="show" data-i18n="optShowShort">显示</option>
             <option value="hide" data-i18n="optHideShort">隐藏</option>
+            <option value="show" data-i18n="optShowShort">显示</option>
           </select>
         </div>
         <div>
@@ -183,9 +191,8 @@
         <div>
           <label for="branch_labels" data-i18n="branchLabels">分支标签</label>
           <select id="branch_labels">
-            <option value="" data-i18n="optOff">关</option>
-            <option value="show" data-i18n="optShowShort">显示</option>
             <option value="hide" data-i18n="optHideShort">隐藏</option>
+            <option value="show" data-i18n="optShowShort">显示</option>
           </select>
         </div>
         <div>
@@ -196,7 +203,7 @@
     </div>
 
     <div class="section">
-      <h3><span data-i18n="secPolar">🧭 极坐标参数</span> <span class="optional">(polar/radial)</span></h3>
+      <h3 data-i18n="secPolar">极坐标参数</h3>
       <div class="row">
         <div>
           <label for="angular_range" data-i18n="angularRange">角度范围 (°)</label>
@@ -210,37 +217,37 @@
     </div>
 
     <div class="section">
-      <h3 data-i18n="secLegend">📊 图例</h3>
+      <h3 data-i18n="secLegend">图例</h3>
       <div class="row">
         <div>
           <label for="legend" data-i18n="legend">图例</label>
           <select id="legend">
-            <option value="" data-i18n="optOff">关</option>
+            <option value="hide" data-i18n="optHideShort">隐藏</option>
             <option value="show" data-i18n="optShowShort">显示</option>
           </select>
         </div>
         <div>
           <label for="legend_position" data-i18n="legendPos">位置</label>
           <select id="legend_position">
-            <option value="bottom" data-i18n="posBottom">bottom</option>
-            <option value="top" data-i18n="posTop">top</option>
-            <option value="left" data-i18n="posLeft">left</option>
-            <option value="right" data-i18n="posRight">right</option>
+            <option value="bottom" data-i18n="posBottom">底部</option>
+            <option value="top" data-i18n="posTop">顶部</option>
+            <option value="left" data-i18n="posLeft">左侧</option>
+            <option value="right" data-i18n="posRight">右侧</option>
           </select>
         </div>
       </div>
     </div>
 
     <div class="section">
-      <h3 data-i18n="secOutput">🖼️ 输出</h3>
+      <h3 data-i18n="secOutput">输出</h3>
       <div class="row">
         <div>
           <label for="render_format" data-i18n="format">格式</label>
           <select id="render_format">
-            <option value="PNG">PNG</option>
-            <option value="PDF">PDF</option>
-            <option value="SVG">SVG</option>
-            <option value="JPEG">JPEG</option>
+            <option value="PNG" data-i18n="fmtPNG">PNG 图片</option>
+            <option value="PDF" data-i18n="fmtPDF">PDF 文档</option>
+            <option value="SVG" data-i18n="fmtSVG">SVG 矢量</option>
+            <option value="JPEG" data-i18n="fmtJPEG">JPEG 图片</option>
           </select>
         </div>
         <div>
@@ -254,31 +261,32 @@
       </div>
     </div>
 
-    <button id="generate-btn" class="btn-primary" data-i18n="generateBtn">⚡ 生成预览 + 导出脚本</button>
+    <button id="generate-btn" class="btn-primary" data-i18n="generateBtn">生成预览 + 导出脚本</button>
   </div>
 
   <!-- 右栏：预览 + 导出 -->
   <div class="right">
     <div class="panel">
       <div class="preview-header">
-        <h3 data-i18n="previewTitle">📋 实时预览</h3>
+        <h3 data-i18n="previewTitle">实时预览</h3>
         <span id="loading-indicator" class="loading hidden" role="status" aria-live="polite" data-i18n="rendering">渲染中…</span>
       </div>
       <div class="preview" id="preview" aria-busy="false">
-        <span class="placeholder" data-i18n="previewPlaceholder">点击「生成预览」按钮开始</span>
+        <span class="placeholder" data-i18n="previewPlaceholder">调整参数以开始预览</span>
       </div>
       <div id="error-msg" class="error-msg" role="alert" aria-live="assertive"></div>
+      <div id="saved-path" class="saved-path" role="status" aria-live="polite"></div>
     </div>
 
     <div class="panel export-panel">
       <div class="export-header">
-        <h3 data-i18n="cliTitle">① 等效 CLI 命令</h3>
+        <h3 data-i18n="cliTitle">等效 CLI 命令</h3>
         <button class="btn-copy" data-target="cli-output" data-i18n="copy">复制</button>
       </div>
       <pre id="cli-output" class="code-block">—</pre>
 
       <div class="export-header">
-        <h3 data-i18n="jsonTitle">② JSON 配置</h3>
+        <h3 data-i18n="jsonTitle">JSON 配置</h3>
         <button class="btn-copy" data-target="json-output" data-i18n="copy">复制</button>
       </div>
       <pre id="json-output" class="code-block">—</pre>

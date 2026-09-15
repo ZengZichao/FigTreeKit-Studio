@@ -6,5 +6,5 @@ Studio 是 ``figtreekit`` 的可视化入口：提供图形界面调参、实时
 Studio 自身不含任何业务逻辑（"薄前端"原则）。
 """
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __all__ = ["__version__"]

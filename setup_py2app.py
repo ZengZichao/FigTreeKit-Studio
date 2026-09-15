@@ -32,8 +32,8 @@ OPTIONS = {
         "CFBundleName": "FigTreeKit Studio",
         "CFBundleDisplayName": "FigTreeKit Studio",
         "CFBundleIdentifier": "com.zengzichao.figtreekit-studio",
-        "CFBundleVersion": "0.1.0",
-        "CFBundleShortVersionString": "0.1.0",
+        "CFBundleVersion": "0.1.1",
+        "CFBundleShortVersionString": "0.1.1",
         "CFBundleIconFile": "icon.icns",
         "NSHumanReadableCopyright": "Copyright 2026 Zeng Zichao, GPL-2.0-or-later",
         "LSBackgroundOnly": False,
@@ -46,6 +46,7 @@ OPTIONS = {
         "figtreekit",
         "Bio",         # biopython
         "webview",     # pywebview（原生桌面窗口）
+        "PIL",         # Pillow 图像处理
     ],
     "includes": [
         "http.server",

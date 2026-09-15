@@ -61,7 +61,10 @@ class TestHealth:
 class TestGenerate:
     def test_simple_generate(self, server_url):
         """POST 一个简单 Newick → 返回合法 PNG base64 且 ok=true。"""
+        import tempfile
+        work_dir = tempfile.mkdtemp(prefix="ftk_smoke_")
         payload = json.dumps({
+            "work_dir": work_dir,
             "tree_text": SIMPLE_TREE,
             "layout": "rectilinear",
             "tip_labels": "show",
@@ -95,9 +98,28 @@ class TestGenerate:
         assert d["ok"] is False
         assert d["error"]
 
+    def test_missing_work_dir(self, server_url):
+        """未指定工作路径应返回 no_work_dir 错误。"""
+        payload = json.dumps({
+            "tree_text": SIMPLE_TREE,
+            "layout": "rectilinear",
+        }).encode()
+        req = urllib.request.Request(
+            f"{server_url}/api/generate",
+            data=payload,
+            headers={"Content-Type": "application/json"},
+        )
+        r = urllib.request.urlopen(req, timeout=10)
+        d = json.loads(r.read().decode())
+        assert d["ok"] is False
+        assert d.get("error_key") == "no_work_dir"
+
     def test_polar_layout(self, server_url):
         """极坐标布局。"""
+        import tempfile
+        work_dir = tempfile.mkdtemp(prefix="ftk_smoke_")
         payload = json.dumps({
+            "work_dir": work_dir,
             "tree_text": SIMPLE_TREE,
             "layout": "polar",
             "tip_labels": "hide",
@@ -125,7 +147,10 @@ class TestGenerate:
 
     def test_curvature_null_returns_structured_error(self, server_url):
         """curvature=null 不应导致空响应，应返回结构化错误。"""
+        import tempfile
+        work_dir = tempfile.mkdtemp(prefix="ftk_smoke_")
         payload = json.dumps({
+            "work_dir": work_dir,
             "tree_text": SIMPLE_TREE,
             "curvature": None,
         }).encode()
@@ -141,7 +166,10 @@ class TestGenerate:
 
     def test_internal_error_returns_structured_response(self, server_url):
         """异常输入不应导致空响应，应返回结构化错误。"""
+        import tempfile
+        work_dir = tempfile.mkdtemp(prefix="ftk_smoke_")
         payload = json.dumps({
+            "work_dir": work_dir,
             "tree_text": SIMPLE_TREE,
             "render_format": "INVALID_FORMAT",
         }).encode()

@@ -36,6 +36,9 @@ class ParamSpec:
     tree_text: str = ""
     tree_file: str = ""
 
+    # --- 工作目录 ---
+    work_dir: str = ""  # 必填，用于存放渲染中间文件
+
     # --- 布局 ---
     layout: str = "rectilinear"
     tip_labels: str = "show"  # "show" | "hide"
@@ -115,8 +118,12 @@ def to_cli_args(p: ParamSpec | dict) -> list[str]:
         args += ["--tip-labels-hide"]
     elif p.tip_labels == "show":
         args += ["--tip-labels-show"]
+    # figtreekit 默认 alignTipLabels=True，所以未勾选时必须显式关闭
     if p.align_tip_labels:
         args += ["--align-tip-labels"]
+    else:
+        layout = p.layout or "rectilinear"
+        args += ["--set", f"{layout}Layout.alignTipLabels=false"]
 
     # --- 外观 ---
     if p.bg_color:
@@ -210,17 +217,13 @@ def to_config_dict(p: ParamSpec | dict) -> dict[str, Any]:
         config["tipLabels.isShown"] = False
     elif p.tip_labels == "show":
         config["tipLabels.isShown"] = True
-    # align_tipLabels 按布局分派到对应布局节点的 alignTipLabels 键
-    if p.align_tip_labels:
-        layout_key = {
-            "rectilinear": "rectilinearLayout.alignTipLabels",
-            "polar": "polarLayout.alignTipLabels",
-            "radial": "radialLayout.alignTipLabels",
-        }.get(p.layout)
-        if layout_key:
-            config[layout_key] = True
-        else:
-            config["polarLayout.alignTipLabels"] = True
+    # alignTipLabels 在 figtreekit 中默认为 True，所以未勾选时必须显式关闭
+    layout_key = {
+        "rectilinear": "rectilinearLayout.alignTipLabels",
+        "polar": "polarLayout.alignTipLabels",
+        "radial": "radialLayout.alignTipLabels",
+    }.get(p.layout or "rectilinear", "rectilinearLayout.alignTipLabels")
+    config[layout_key] = bool(p.align_tip_labels)
     if p.bg_color:
         config["appearance.backgroundColour"] = p.bg_color
     if p.branch_width > 0:

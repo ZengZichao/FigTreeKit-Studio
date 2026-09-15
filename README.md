@@ -8,7 +8,7 @@ FigTreeKit Studio 是 [`figtreekit`](https://pypi.org/project/figtreekit/) 的�
 
 [🇬🇧 English](README_EN.md) · 🇨🇳 中文
 
-**v0.1.0 首次开源发布**
+**v0.1.1 维护更新**
 - 🖥️ **独立桌面应用**：原生窗口运行（pywebview），不依赖浏览器
 - 🌐 **中英文双语界面**：一键切换（右上角 `EN / 中文`），自动记忆，首次按系统语言选择
 - 🌿 **SVG 矢量 Logo**：黑白灰配色的极简系统发育树（`static/logo.svg`），同步用作应用图标
@@ -34,7 +34,7 @@ pip install figtreekit-studio
 
 macOS 验证通过；Windows/Linux 理论兼容（界面层规避原生控件）。
 
-> ⚠️ 本项目处于 Alpha 阶段（v0.1.0），API 和界面可能随版本迭代调整。
+> ⚠️ 本项目处于 Alpha 阶段（v0.1.1），API 和界面可能随版本迭代调整。
 
 ---
 
@@ -105,7 +105,7 @@ python -m figtreekit input.tre -o output.nex --force \
 
 ## 功能
 
-### 当前版本（v0.1.0）
+### 当前版本（v0.1.1）
 - ✅ 桌面应用：原生窗口，不依赖浏览器（pywebview / WKWebView）
 - ✅ 中英文双语界面，一键切换并记忆
 - ✅ SVG 矢量 Logo（黑白灰极简风）+ 同源应用图标
