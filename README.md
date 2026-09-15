@@ -6,6 +6,8 @@ FigTreeKit Studio 是 [`figtreekit`](https://pypi.org/project/figtreekit/) 的�
 它提供图形界面调参、实时 PNG 预览、等效 CLI 命令与 JSON 配置导出，
 让非编程的生物学家、审稿人也能快速样式化系统发育树，同时保持完全可复现性。
 
+[🇬🇧 English](README_EN.md) · 🇨🇳 中文
+
 **v0.1.0 首次开源发布**
 - 🖥️ **独立桌面应用**：原生窗口运行（pywebview），不依赖浏览器
 - 🌐 **中英文双语界面**：一键切换（右上角 `EN / 中文`），自动记忆，首次按系统语言选择
@@ -234,3 +236,27 @@ GPL-2.0-or-later（与 figtreekit 一致）。详见 [LICENSE](LICENSE)。
 - 提交前运行 `python -m pytest tests/ -v` 且全部通过
 - 遵循现有的代码风格（Python: `from __future__ import annotations`；JS: vanilla, 无构建步骤）
 - 不修改 `params.to_cli_args` 的单一事实来源设计
+
+---
+
+## 引用 / Citation
+
+FigTreeKit Studio 基于 [`figtreekit`](https://pypi.org/project/figtreekit/) 构建。若你在研究中使用了 FigTreeKit（或其可视化前端 FigTreeKit Studio），请引用：
+
+> Zeng Z. (2026). *FigTreeKit: A Python toolkit for programmatic FigTree styling, taxonomy-aware clade auditing, and phylogenetic tree rendering*. https://doi.org/10.64898/2026.08.27.747475
+
+- **PyPI**：https://pypi.org/project/figtreekit/
+- **源代码**：https://github.com/ZengZichao/FigTreeKit
+- **DOI**：https://doi.org/10.64898/2026.08.27.747475
+
+BibTeX：
+
+```bibtex
+@software{figtreekit2026,
+  author = {Zeng, Zichao},
+  title = {FigTreeKit: A Python toolkit for programmatic FigTree styling, taxonomy-aware clade auditing, and phylogenetic tree rendering},
+  year = {2026},
+  url = {https://github.com/ZengZichao/FigTreeKit},
+  doi = {10.64898/2026.08.27.747475}
+}
+```
