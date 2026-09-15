@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FigTreeKit Studio</title>
+<link rel="icon" type="image/svg+xml" href="/static/logo.svg">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="i18n-pending">
+<header>
+  <div class="header-left">
+    <img src="/static/logo.svg" alt="FigTreeKit Studio logo" class="logo">
+    <div class="title-block">
+      <h1>FigTreeKit Studio</h1>
+      <span class="tagline" data-i18n="tagline">可视化调参 · 实时预览 · 可复现脚本导出</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <button id="lang-btn" class="btn-sm" data-i18n-title="langBtnTitle">EN</button>
+    <button id="health-btn" class="btn-sm" data-i18n="healthBtn" data-i18n-title="healthBtnTitle">环境检测</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- 左栏：调参表单 -->
+  <div class="panel left">
+    <div class="section">
+      <h3 data-i18n="secTree">📂 树输入</h3>
+      <label for="tree_text" data-i18n="treeText">Newick / Nexus 文本</label>
+      <textarea id="tree_text" data-i18n-ph="treeTextPh" placeholder="粘贴 Newick 或 Nexus 树文本…" spellcheck="false">((A:0.1,B:0.2):0.3,(C:0.4,D:0.5):0.6);</textarea>
+      <div class="hint" data-i18n="treeHint">直接粘贴含 GTDB 分类标签的树可驱动自动配色/折叠。</div>
+      <label for="tree_file"><span data-i18n="treeFile">或上传文件</span> <span class="optional">(.tre/.nwk/.nex)</span></label>
+      <input type="file" id="tree_file" accept=".tre,.nwk,.nex,.tree">
+    </div>
+
+    <div class="section">
+      <h3 data-i18n="secLayout">🔀 布局</h3>
+      <label for="layout" data-i18n="layout">布局类型</label>
+      <select id="layout">
+        <option value="rectilinear" data-i18n="layoutRect">rectilinear（矩形树）</option>
+        <option value="polar" data-i18n="layoutPolar">polar（极坐标）</option>
+        <option value="radial" data-i18n="layoutRadial">radial（放射状）</option>
+      </select>
+      <label for="tip_labels" data-i18n="tipLabels">末端标签</label>
+      <select id="tip_labels">
+        <option value="show" data-i18n="optShow">显示 show</option>
+        <option value="hide" data-i18n="optHide">隐藏 hide</option>
+      </select>
+      <label class="checkbox-row">
+        <input type="checkbox" id="align_tip_labels">
+        <span data-i18n="alignTips">径向对齐标签</span>
+      </label>
+    </div>
+
+    <div class="section">
+      <h3 data-i18n="secAppearance">🎨 外观</h3>
+      <div class="row">
+        <div>
+          <label for="bg_color" data-i18n="bgColor">背景色</label>
+          <div class="color-row">
+            <input type="color" id="bg_color_picker" value="#ffffff" data-i18n-aria="bgColor" aria-label="背景色">
+            <input type="text" id="bg_color" value="" placeholder="#FAFAFA" class="color-text">
+          </div>
+        </div>
+        <div>
+          <label for="branch_width" data-i18n="branchWidth">分支线宽</label>
+          <input type="number" id="branch_width" value="0" step="0.5" min="0">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="foreground_color" data-i18n="fgColor">前景色</label>
+          <div class="color-row">
+            <input type="color" id="fg_color_picker" value="#000000" data-i18n-aria="fgColor" aria-label="前景色">
+            <input type="text" id="foreground_color" value="#000000" placeholder="#000000" class="color-text">
+          </div>
+        </div>
+        <div>
+          <label for="label_color" data-i18n="labelColor">标签色</label>
+          <div class="color-row">
+            <input type="color" id="label_color_picker" value="#000000" data-i18n-aria="labelColor" aria-label="标签色">
+            <input type="text" id="label_color" value="#000000" placeholder="#000000" class="color-text">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="font_name" data-i18n="fontName">字体名</label>
+          <input type="text" id="font_name" data-i18n-ph="fontNamePh" placeholder="如 Arial" class="full">
+        </div>
+        <div>
+          <label for="font_size" data-i18n="fontSize">字号 (pt)</label>
+          <input type="number" id="font_size" value="0" step="1" min="0" data-i18n-ph="optDefault" placeholder="默认">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="font_style" data-i18n="fontStyle">字体样式</label>
+          <select id="font_style">
+            <option value="" data-i18n="optDefault">默认</option>
+            <option value="plain">plain</option>
+            <option value="bold">bold</option>
+            <option value="italic">italic</option>
+            <option value="bold-italic">bold-italic</option>
+          </select>
+        </div>
+        <div>
+          <label for="curvature" data-i18n="curvature">曲率 (矩形树)</label>
+          <input type="number" id="curvature" value="-1" step="1" min="-1" data-i18n-ph="curvaturePh" placeholder="-1=默认">
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3 data-i18n="secTaxonomy">🧬 分类学</h3>
+      <label for="auto_color_rank" data-i18n="autoColorRank">自动配色级别</label>
+      <select id="auto_color_rank">
+        <option value="" data-i18n="optNone" selected>（无）</option>
+        <option value="domain" data-i18n="rankDomain">domain（域）</option>
+        <option value="phylum" data-i18n="rankPhylum">phylum（门）</option>
+        <option value="class" data-i18n="rankClass">class（纲）</option>
+        <option value="order" data-i18n="rankOrder">order（目）</option>
+        <option value="family" data-i18n="rankFamily">family（科）</option>
+        <option value="genus" data-i18n="rankGenus">genus（属）</option>
+        <option value="species" data-i18n="rankSpecies">species（种）</option>
+      </select>
+      <label for="collapse_rank" data-i18n="collapseRank">折叠级别</label>
+      <div class="row">
+        <div>
+          <select id="collapse_rank">
+            <option value="" data-i18n="optNone">（无）</option>
+            <option value="phylum" data-i18n="rankPhylum">phylum</option>
+            <option value="class" data-i18n="rankClass">class</option>
+            <option value="order" data-i18n="rankOrder">order</option>
+          </select>
+        </div>
+        <div>
+          <label for="collapse_style" data-i18n="collapseStyle">折叠样式</label>
+          <select id="collapse_style">
+            <option value="collapse">collapse</option>
+            <option value="cartoon">cartoon</option>
+          </select>
+        </div>
+      </div>
+      <label for="taxonomy_file"><span data-i18n="taxonomyFile">分类映射文件</span> <span class="optional" data-i18n="comingSoon">(TSV/CSV，规划中)</span></label>
+      <input type="file" id="taxonomy_file" accept=".tsv,.csv,.txt" disabled>
+    </div>
+
+    <div class="section">
+      <h3 data-i18n="secScale">📏 刻度与标签</h3>
+      <div class="row">
+        <div>
+          <label for="scale_axis" data-i18n="scaleAxis">刻度轴</label>
+          <select id="scale_axis">
+            <option value="" data-i18n="optOff">关</option>
+            <option value="show" data-i18n="optShowShort">显示</option>
+          </select>
+        </div>
+        <div>
+          <label for="scale_bar" data-i18n="scaleBar">比例尺</label>
+          <select id="scale_bar">
+            <option value="" data-i18n="optOff">关</option>
+            <option value="show" data-i18n="optShowShort">显示</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="node_labels" data-i18n="nodeLabels">节点标签</label>
+          <select id="node_labels">
+            <option value="" data-i18n="optOff">关</option>
+            <option value="show" data-i18n="optShowShort">显示</option>
+            <option value="hide" data-i18n="optHideShort">隐藏</option>
+          </select>
+        </div>
+        <div>
+          <label for="node_display_attribute" data-i18n="nodeAttr">节点属性</label>
+          <input type="text" id="node_display_attribute" data-i18n-ph="nodeAttrPh" placeholder="如 height" class="full">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="branch_labels" data-i18n="branchLabels">分支标签</label>
+          <select id="branch_labels">
+            <option value="" data-i18n="optOff">关</option>
+            <option value="show" data-i18n="optShowShort">显示</option>
+            <option value="hide" data-i18n="optHideShort">隐藏</option>
+          </select>
+        </div>
+        <div>
+          <label for="branch_display_attribute" data-i18n="branchAttr">分支属性</label>
+          <input type="text" id="branch_display_attribute" data-i18n-ph="branchAttrPh" placeholder="如 length" class="full">
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3><span data-i18n="secPolar">🧭 极坐标参数</span> <span class="optional">(polar/radial)</span></h3>
+      <div class="row">
+        <div>
+          <label for="angular_range" data-i18n="angularRange">角度范围 (°)</label>
+          <input type="number" id="angular_range" value="0" step="1" min="0" max="360" data-i18n-ph="zeroDefault" placeholder="0=默认">
+        </div>
+        <div>
+          <label for="root_angle" data-i18n="rootAngle">根角度 (°)</label>
+          <input type="number" id="root_angle" value="0" step="1" min="0" max="360" data-i18n-ph="zeroDefault" placeholder="0=默认">
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3 data-i18n="secLegend">📊 图例</h3>
+      <div class="row">
+        <div>
+          <label for="legend" data-i18n="legend">图例</label>
+          <select id="legend">
+            <option value="" data-i18n="optOff">关</option>
+            <option value="show" data-i18n="optShowShort">显示</option>
+          </select>
+        </div>
+        <div>
+          <label for="legend_position" data-i18n="legendPos">位置</label>
+          <select id="legend_position">
+            <option value="bottom" data-i18n="posBottom">bottom</option>
+            <option value="top" data-i18n="posTop">top</option>
+            <option value="left" data-i18n="posLeft">left</option>
+            <option value="right" data-i18n="posRight">right</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3 data-i18n="secOutput">🖼️ 输出</h3>
+      <div class="row">
+        <div>
+          <label for="render_format" data-i18n="format">格式</label>
+          <select id="render_format">
+            <option value="PNG">PNG</option>
+            <option value="PDF">PDF</option>
+            <option value="SVG">SVG</option>
+            <option value="JPEG">JPEG</option>
+          </select>
+        </div>
+        <div>
+          <label for="width" data-i18n="width">图宽 (px)</label>
+          <input type="number" id="width" value="1600" step="100" min="200">
+        </div>
+        <div>
+          <label for="height" data-i18n="height">图高 (px)</label>
+          <input type="number" id="height" value="1000" step="100" min="200">
+        </div>
+      </div>
+    </div>
+
+    <button id="generate-btn" class="btn-primary" data-i18n="generateBtn">⚡ 生成预览 + 导出脚本</button>
+  </div>
+
+  <!-- 右栏：预览 + 导出 -->
+  <div class="right">
+    <div class="panel">
+      <div class="preview-header">
+        <h3 data-i18n="previewTitle">📋 实时预览</h3>
+        <span id="loading-indicator" class="loading hidden" role="status" aria-live="polite" data-i18n="rendering">渲染中…</span>
+      </div>
+      <div class="preview" id="preview" aria-busy="false">
+        <span class="placeholder" data-i18n="previewPlaceholder">点击「生成预览」按钮开始</span>
+      </div>
+      <div id="error-msg" class="error-msg" role="alert" aria-live="assertive"></div>
+    </div>
+
+    <div class="panel export-panel">
+      <div class="export-header">
+        <h3 data-i18n="cliTitle">① 等效 CLI 命令</h3>
+        <button class="btn-copy" data-target="cli-output" data-i18n="copy">复制</button>
+      </div>
+      <pre id="cli-output" class="code-block">—</pre>
+
+      <div class="export-header">
+        <h3 data-i18n="jsonTitle">② JSON 配置</h3>
+        <button class="btn-copy" data-target="json-output" data-i18n="copy">复制</button>
+      </div>
+      <pre id="json-output" class="code-block">—</pre>
+    </div>
+  </div>
+</div>
+
+<!-- 健康检查弹窗 -->
+<div id="health-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="health-modal-title">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="health-modal-title" data-i18n="healthTitle">环境检测</h3>
+      <button id="health-close" class="btn-close" data-i18n-aria="close" aria-label="关闭">&times;</button>
+    </div>
+    <div id="health-body" class="modal-body" role="status" aria-live="polite" data-i18n="checking">检测中…</div>
+  </div>
+</div>
+
+<noscript>
+  <p style="padding:20px;text-align:center;">FigTreeKit Studio requires JavaScript to run.</p>
+</noscript>
+<script src="/static/app.js"></script>
+<!-- 若 app.js 未能执行，2 秒后强制显示，避免白屏 -->
+<script>
+  setTimeout(function () {
+    document.body.classList.remove('i18n-pending');
+  }, 2000);
+</script>
+</body>
+</html>

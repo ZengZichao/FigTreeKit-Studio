@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="FigTreeKit Studio">
+  <!-- FigTreeKit Studio logo: minimal grayscale phylogenetic tree -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- trunk (darkest) -->
+    <path d="M32 57 V41" stroke="#1a1a1a" stroke-width="4.6"/>
+    <!-- primary split -->
+    <path d="M20 41 H44" stroke="#1a1a1a" stroke-width="4.6"/>
+    <!-- clade rises -->
+    <path d="M20 41 V30" stroke="#4d4d4d" stroke-width="4.2"/>
+    <path d="M44 41 V26" stroke="#4d4d4d" stroke-width="4.2"/>
+    <!-- left clade split -->
+    <path d="M11.5 30 H27.5" stroke="#7a7a7a" stroke-width="3.8"/>
+    <path d="M11.5 30 V21.5" stroke="#7a7a7a" stroke-width="3.8"/>
+    <path d="M27.5 30 V25" stroke="#7a7a7a" stroke-width="3.8"/>
+    <!-- right clade split -->
+    <path d="M36.5 26 H52" stroke="#7a7a7a" stroke-width="3.8"/>
+    <path d="M36.5 26 V18" stroke="#7a7a7a" stroke-width="3.8"/>
+    <path d="M52 26 V22.5" stroke="#7a7a7a" stroke-width="3.8"/>
+  </g>
+  <!-- leaf nodes (grayscale gradation) -->
+  <circle cx="11.5" cy="21.5" r="3.7" fill="#1a1a1a"/>
+  <circle cx="27.5" cy="25"   r="3.7" fill="#8c8c8c"/>
+  <circle cx="36.5" cy="18"   r="3.7" fill="#4d4d4d"/>
+  <circle cx="52"   cy="22.5" r="3.7" fill="#b3b3b3"/>
+</svg>
