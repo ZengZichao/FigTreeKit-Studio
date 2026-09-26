@@ -14,9 +14,12 @@ from __future__ import annotations
 import argparse
 import http.client
 import json
+import shutil
+import tempfile
 import threading
 import time
 import webbrowser
+from pathlib import Path
 
 
 def _smoke_test() -> int:
@@ -28,6 +31,9 @@ def _smoke_test() -> int:
 
     server = create_server("127.0.0.1", 0)
     port = int(server.server_address[1])
+    # /api/generate 要求显式工作目录（0.1.1 起的必填项），自检也不例外：
+    # 用一个临时目录，顺带证明产物确实落盘。
+    work_dir = tempfile.mkdtemp(prefix="ftk_smoke_")
     threading.Thread(target=server.serve_forever, daemon=True).start()
     try:
         conn = http.client.HTTPConnection("127.0.0.1", port, timeout=180)
@@ -45,6 +51,7 @@ def _smoke_test() -> int:
         body = json.dumps({
             "tree_text": "((A:0.1,B:0.2):0.3,(C:0.4,D:0.5):0.6);",
             "layout": "rectilinear",
+            "work_dir": work_dir,
             "tip_labels": "show",
             "width": 600,
             "height": 400,
@@ -61,12 +68,18 @@ def _smoke_test() -> int:
         if not str(d.get("image", "")).startswith("data:image/png;base64,"):
             print("[smoke] image is not PNG data URI")
             return 2
-        print(f"[smoke] generate OK, image {len(d['image'])} chars")
+        leftovers = [n for n in Path(work_dir).rglob("*") if n.is_file()]
+        if not leftovers:
+            print("[smoke] no artefacts written under the working directory")
+            return 2
+        print(f"[smoke] generate OK, image {len(d['image'])} chars; "
+              f"{len(leftovers)} artefact(s) under the session directory")
         print("SMOKE TEST PASSED")
         return 0
     finally:
         server.shutdown()
         server.server_close()
+        shutil.rmtree(work_dir, ignore_errors=True)
 
 
 def main(argv=None):

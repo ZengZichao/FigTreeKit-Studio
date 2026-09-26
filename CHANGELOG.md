@@ -32,6 +32,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - README 安装路径改为可用的仓库安装方式（`pip install figtreekit-studio` 在 PyPI
   不存在），补出仓库 URL；平台表述与 CI 实况一致（仅 macOS 验证）。
 
+### Fixed — 冻结包（本次实测构建暴露）
+
+- `ci.yml` 的打包步骤原先传 `--no-banner`，PyInstaller 无此参数，构建即失败；
+  改为 `--noconfirm`（非交互覆盖输出目录）。
+- `--smoke-test` 未传工作目录，而 0.1.1 起 `/api/generate` 必填该项，自检因此
+  必定返回 `请指定工作路径`；改为用临时目录驱动完整生成链，并断言会话目录下
+  确实产出文件，退出前清理。
+- 打包配置原先只在 `hiddenimports` 里写了包名 `figtreekit`：子模块（`_cli`、
+  `_renderer`、`_appearance_post` 等）与 `figtree_patched.jar` 均不会被收集，
+  0.1.2 把渲染下沉到核心后冻结包在首次生成时抛
+  `ModuleNotFoundError: No module named 'figtreekit._cli'`。改用
+  `collect_submodules()` + `collect_data_files()`，并以 `importlib` 解析核心的
+  真实源码目录加入 `pathex`——PyInstaller 按 `sys.path` 查找，无法定位 PEP 660
+  可编辑安装，会静默丢模块并只留下 `Hidden import ... not found` 日志。
+  spec 内加了两条断言，收集失败时构建直接失败而非产出坏包。
+
+实测：`dist/FigTreeKit Studio.app/.../FigTreeKit Studio --smoke-test` 退出码 0，
+输出 `SMOKE TEST PASSED`，会话目录下 3 个产物；包内同时含核心与前端两份
+`figtree_patched.jar`。
+
 ### Tests
 - 82 → 100 项；新增回放等价、绑定地址、对比度、JAR 一致性与 Java 版本下限测试。
 

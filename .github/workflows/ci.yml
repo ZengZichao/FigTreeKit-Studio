@@ -38,7 +38,7 @@ jobs:
       - name: Build the macOS application bundle
         run: |
           pip install pyinstaller
-          python -m PyInstaller --no-banner --distpath dist "FigTreeKit Studio.spec"
+          python -m PyInstaller --noconfirm --distpath dist "FigTreeKit Studio.spec"
 
       - name: Packaged-application self-check
         run: |
