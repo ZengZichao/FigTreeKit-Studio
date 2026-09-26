@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.2] - Unreleased
 
-### Fixed — pre-submission audit of the manuscript (JSE, 2026-09)
+### Fixed
 
 - 渲染与配色全部下沉到 `figtreekit` 核心：删除 Studio 自己的位图重着色
   （`core/renderer.py` 的 Pillow 通道）与事后改写 NEXUS 标签色的私有 API 调用
@@ -22,10 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   测试；修正 `style.css` 中与实测不符的注释。
 - `check_java()` 现在真正解析并强制 Java 版本下限（此前只判断 java 是否存在）。
 - `locate_jar()` 优先取核心库内的权威 JAR 副本，打包内副本降为回退，消除版本漂移方向。
-- CI 增加打包构建与 `--smoke-test` 自检两个步骤（此前该自检只是人工命令，
-  却被稿件写作 CI 行为）；`--smoke-test` 取消隐藏。
-- 工作目录改为按会话归拢（`ftk_session_<id>/run_<id>/`），与稿件“每次会话一个
-  专用子目录”的表述一致。
+- CI 增加打包构建与 `--smoke-test` 自检两个步骤：进程内跑测试从未证明冻结包
+  可用，而 PyInstaller 数据文件、内置 JAR 与打包后的入口点恰恰只有构建之后才
+  存在。`--smoke-test` 同时取消隐藏，出现在 `--help` 中。
+- 工作目录改为按会话归拢（`ftk_session_<id>/run_<id>/`）：同一次会话的多次生成
+  因此可整体审阅与留存，且不会与相邻会话的输出交错。
 - `LICENSE` 换为规范 GPL-2.0-or-later 全文（原为删节版，缺 “or later” 授权段）；
   `CITATION.cff` 修正版本号、补全作者与单位。
 - README 安装路径改为可用的仓库安装方式（`pip install figtreekit-studio` 在 PyPI
@@ -35,7 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 82 → 100 项；新增回放等价、绑定地址、对比度、JAR 一致性与 Java 版本下限测试。
 
 > 待办：为 0.1.2 打 tag；Zenodo 会随 tag 自动产出该版本的存档 DOI，届时把
-> `CITATION.cff` 的 version/date-released/doi 一并提升。稿件若引用 0.1.2，须先完成本项。
+> `CITATION.cff` 的 version/date-released/doi 一并提升。任何外部文档若按版本号
+> 引用本前端，都应等该 tag 存在之后再引用。
 > 注：0.1.1 已在 Zenodo 存档（版本 DOI 10.5281/zenodo.22766960，
 > concept DOI 10.5281/zenodo.22766959）。
 
