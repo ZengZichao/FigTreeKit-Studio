@@ -34,3 +34,14 @@ jobs:
       - name: Run tests
         run: |
           python -m pytest tests/ -v
+
+      - name: Build the macOS application bundle
+        run: |
+          pip install pyinstaller
+          python -m PyInstaller --no-banner --distpath dist "FigTreeKit Studio.spec"
+
+      - name: Packaged-application self-check
+        run: |
+          # 冻结包内跑完整生成链（起服务 -> /api/health -> /api/generate ->
+          # 校验合法图像与导出记录）。此步过去只是 README 里的人工命令。
+          "./dist/FigTreeKit Studio.app/Contents/MacOS/FigTreeKit Studio" --smoke-test
