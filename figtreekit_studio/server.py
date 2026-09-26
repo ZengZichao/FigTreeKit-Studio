@@ -256,14 +256,39 @@ def _handle_generate(params_dict: dict) -> dict:
 # --------------------------------------------------------------------------- #
 # 启动
 # --------------------------------------------------------------------------- #
-def create_server(host: str = "127.0.0.1", port: int = 8777) -> ThreadingHTTPServer:
-    """创建 ThreadingHTTPServer 实例。"""
-    return ThreadingHTTPServer((host, port), StudioHandler)
+LOOPBACK_HOSTS = ("127.0.0.1", "localhost", "::1")
 
 
-def serve(host: str = "127.0.0.1", port: int = 8777):
+def resolve_bind_host(host: str, *, allow_remote: bool = False) -> str:
+    """返回实际绑定地址；非回环地址必须显式放行。
+
+    Studio 的服务没有任何鉴权，因此默认只允许回环接口。历史上 `--host` 直接
+    透传，`figtreekit-studio --host 0.0.0.0` 会静默监听全部网卡；现在必须同时
+    给出 `--allow-remote-bind` 才允许这样绑定。
+    """
+    value = (host or "127.0.0.1").strip()
+    if value in LOOPBACK_HOSTS or value.startswith("127."):
+        return "127.0.0.1" if value == "localhost" else value
+    if not allow_remote:
+        raise ValueError(
+            f"refusing to bind {value!r}: the Studio service has no "
+            f"authentication. Use a loopback address (default 127.0.0.1) or "
+            f"pass --allow-remote-bind deliberately."
+        )
+    return value
+
+
+def create_server(host: str = "127.0.0.1", port: int = 8777,
+                  *, allow_remote: bool = False) -> ThreadingHTTPServer:
+    """创建 ThreadingHTTPServer 实例（绑定地址经 resolve_bind_host 校验）。"""
+    return ThreadingHTTPServer((resolve_bind_host(host, allow_remote=allow_remote),
+                                port), StudioHandler)
+
+
+def serve(host: str = "127.0.0.1", port: int = 8777, *,
+          allow_remote: bool = False):
     """启动 HTTP 服务（阻塞）。port=0 时由系统分配并打印实际端口。"""
-    server = create_server(host, port)
+    server = create_server(host, port, allow_remote=allow_remote)
     port = server.server_address[1]
     print(f"[FigTreeKit Studio] http://{host}:{port}")
     print(f"[FigTreeKit Studio] static  = {STATIC_DIR}")

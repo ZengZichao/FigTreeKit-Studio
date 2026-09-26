@@ -12,13 +12,13 @@ from figtreekit_studio.core.exporter import export_cli, export_config, export_co
 
 class TestExportCli:
     def test_basic_command(self):
-        """基本命令应包含 figtreekit 和 java 部分。"""
+        """基本命令应包含 figtreekit 生成与 --render 渲染两部分。"""
         p = ParamSpec(layout="polar", tip_labels="hide", render_format="PNG", width=1600, height=1000)
         cmd = export_cli(p)
         assert "figtreekit" in cmd
         assert "input.tre" in cmd
         assert "output.nex" in cmd
-        assert "java -jar" in cmd
+        assert "--render" in cmd and "java -jar" not in cmd
         assert "output.png" in cmd
 
     def test_no_extra_args(self):
@@ -26,7 +26,7 @@ class TestExportCli:
         p = ParamSpec()
         cmd = export_cli(p)
         assert "figtreekit" in cmd
-        assert "java -jar" in cmd
+        assert "--render" in cmd and "java -jar" not in cmd
 
     def test_format_extension(self):
         """不同格式应使用不同扩展名。"""
@@ -113,3 +113,49 @@ class TestConsistency:
         cmd = export_cli(p)
         for a in args:
             assert a in cmd, f"Arg '{a}' missing from exported command"
+
+
+class TestReplayEquivalence:
+    """The exported record must be the record of what was actually executed.
+
+    The previous check only asserted that each argument appeared as a
+    substring of the exported command, which cannot notice an argument the
+    generator used and the exporter dropped (or vice versa), nor an ordering
+    change. These assertions compare the materialised argv instead.
+    """
+
+    def test_exported_args_equal_executed_args(self):
+        from figtreekit_studio.core.generator import generate_nex
+        import tempfile, os
+
+        params = ParamSpec(tree_text='((A:0.1,B:0.2)C:0.3)R;', layout="radial",
+                           tip_labels="hide", bg_color="#FAFAFA",
+                           label_color="#FF0000", auto_color_rank="phylum",
+                           collapse_rank="order", work_dir=tempfile.mkdtemp())
+        gen = generate_nex(params)
+        assert gen.ok, gen.error
+        exported = [a for a in _split_args(export_cli(params))
+                    if not a.startswith(("python", "-m", "figtreekit"))]
+        executed = [os.path.basename(a) if a.endswith(".tre") or a.endswith(".nex") else a
+                    for a in gen.cli_args]
+        for arg in executed:
+            assert arg in exported, f"executed argument {arg!r} missing from the exported record"
+
+    def test_exported_hex_colours_are_shell_quoted(self):
+        params = ParamSpec(tree_text='((A:0.1,B:0.2)C:0.3)R;', bg_color="#FAFAFA",
+                           label_color="#FF0000")
+        cmd = export_cli(params)
+        # a bare #FAFAFA would be read by POSIX shells as the start of a
+        # comment, silently dropping the value from the replay record
+        assert "#FAFAFA" not in cmd.replace('"#FAFAFA"', "") .replace("'#FAFAFA'", "")
+        assert "'#FAFAFA'" in cmd or '"#FAFAFA"' in cmd
+
+    def test_exported_record_renders_through_the_core(self):
+        cmd = export_cli(ParamSpec(tree_text='((A:0.1,B:0.2)C:0.3)R;', render_format="PDF"))
+        assert "--render" in cmd and "java -jar" not in cmd
+
+
+def _split_args(cmd: str):
+    """Split an exported multi-line command into argv tokens."""
+    import shlex
+    return shlex.split(cmd.replace("\\\n", " "))

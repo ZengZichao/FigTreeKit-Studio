@@ -74,7 +74,10 @@ def main(argv=None):
         prog="figtreekit-studio",
         description="FigTreeKit Studio — 可视化调参 + 实时预览 + 可复现脚本导出",
     )
-    ap.add_argument("--host", default="127.0.0.1", help="绑定地址 (默认 127.0.0.1)")
+    ap.add_argument("--host", default="127.0.0.1",
+                    help="绑定地址 (默认且仅允许 127.0.0.1；非回环需 --allow-remote-bind)")
+    ap.add_argument("--allow-remote-bind", action="store_true",
+                    help="显式允许绑定到非回环地址（服务无鉴权，请谨慎）")
     ap.add_argument("--port", type=int, default=None,
                     help="端口 (默认: 桌面模式自动选择, 浏览器模式 8777)")
     ap.add_argument("--browser", action="store_true",
@@ -84,7 +87,7 @@ def main(argv=None):
     ap.add_argument("--no-browser", action="store_true",
                     help="(兼容旧参数) 等价于 --no-window")
     ap.add_argument("--smoke-test", action="store_true",
-                    help=argparse.SUPPRESS)  # 打包自检用
+                    help="打包应用自检：在冻结包内跑完整生成链后退出（CI 使用）")
     args = ap.parse_args(argv)
 
     if args.smoke_test:
@@ -95,7 +98,9 @@ def main(argv=None):
     # --- 仅起服务 ---
     if headless:
         from figtreekit_studio.server import serve
-        serve(host=args.host, port=args.port if args.port is not None else 8777)
+        serve(host=args.host,
+             port=args.port if args.port is not None else 8777,
+             allow_remote=args.allow_remote_bind)
         return
 
     # --- 浏览器模式 ---
@@ -115,7 +120,7 @@ def main(argv=None):
     # --- 桌面窗口模式（默认，不依赖浏览器）---
     from figtreekit_studio.desktop import run_desktop
 
-    ok = run_desktop(host=args.host, port=args.port)
+    ok = run_desktop(host=args.host, allow_remote_bind=args.allow_remote_bind, port=args.port)
     if not ok:
         # pywebview 不可用 → 回退浏览器模式
         print("[FigTreeKit Studio] pywebview 不可用，回退到浏览器模式 "

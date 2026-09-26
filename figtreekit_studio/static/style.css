@@ -2,11 +2,11 @@
   --bg: #f5f6f8;
   --card: #ffffff;
   --line: #e2e5ea;
-  --line-strong: #9aa2ad;  /* 交互控件边界，对白底 ≥3:1 */
+  --line-strong: #888f98;  /* 交互控件边界，对 --bg 3.0:1（WCAG 非文本对比度） */
   --ink: #1f2329;
-  --accent: #2f6fed;
+  --accent: #2d69e1;
   --accent-hover: #1f5ed4;
-  --mut: #6b7280;  /* 次要文字，对白底 ≈4.83:1 */
+  --mut: #6a717f;  /* 次要文字，对 --bg 4.5:1（WCAG AA 正文） */
   --green: #22c55e;
   --red: #dc2626;
   --code-bg: #0f1216;

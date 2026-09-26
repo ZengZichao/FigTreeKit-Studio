@@ -12,6 +12,7 @@ generator — 参数 → figtreekit CLI → .nex
 
 from __future__ import annotations
 
+import uuid
 import contextlib
 import io
 import os
@@ -44,33 +45,14 @@ class GenResult:
     is_user_work_dir: bool = False  # True 表示 work_dir 由用户指定，不应自动清理
 
 
+#: 本进程（即一次 Studio 会话）的固定标识，用于聚合会话产物
+SESSION_ID = uuid.uuid4().hex[:8]
+
 # 参数以 list 方式传递给 subprocess.run / runpy，不经过 shell 解析，故无需转义/白名单。
 
 
-def _apply_label_color(nex_path: str, label_color: str) -> None:
-    """
-    为所有末端节点添加 !color 注释，并将 tipLabels.colorAttribute 设为 "!color"，
-    使 FigTree JAR 在 headless 渲染时仍能识别标签颜色。
-
-    由于 FigTree 命令行渲染器不会读取 appearance.foregroundColour /
-    tipLabels.colorAttribute 中的字面颜色，必须把标签颜色以节点注释形式写入。
-    失败时静默忽略，避免阻断生成流程。
-    """
-    if not label_color:
-        return
-    try:
-        import figtreekit
-
-        styler = figtreekit.FigTreeStyler(nex_path)
-        tree = styler._parse_tree_with_biopython(styler._tree_content)
-        if tree is None:
-            return
-        for tip in (t.name for t in tree.get_terminals() if t.name):
-            styler.set_clade_color([tip], label_color)
-        styler.set_tip_labels(color_attribute="!color")
-        styler.export(nex_path)
-    except Exception:
-        pass
+# 标签颜色由核心 `--label-color`（FigTreeStyler.set_tip_label_colors）实现，
+# Studio 不再自行改写 NEXUS：见 core/renderer.py 顶部的委托说明。
 
 
 def _run_figtreekit_inprocess(args: list[str], timeout: int = 0) -> tuple[int, str, bool]:
@@ -153,7 +135,10 @@ def generate_nex(params: ParamSpec | dict[str, Any], *, timeout: int = 120) -> G
         # 在用户指定目录下为本次渲染创建唯一子目录，避免覆盖
         import uuid
         base_dir = os.path.expanduser(params.work_dir.strip())
-        run_dir = f"ftk_run_{uuid.uuid4().hex[:8]}"
+            # 一个应用会话共用一个 ftk_session_* 目录，其下每次生成再建 run_*，
+        # 因此"每次会话一个专用子目录"成立，且会话产物彼此相邻可审计。
+        run_dir = os.path.join(f"ftk_session_{SESSION_ID}",
+                               f"run_{uuid.uuid4().hex[:8]}")
         work_dir = os.path.join(base_dir, run_dir)
         try:
             os.makedirs(work_dir, exist_ok=True)
@@ -196,7 +181,6 @@ def generate_nex(params: ParamSpec | dict[str, Any], *, timeout: int = 120) -> G
                 error=f"figtreekit 生成失败:\n{tail}",
                 error_key="figtreekit_failed", error_detail=tail, log=_log,
             )
-        _apply_label_color(nex_path, params.label_color)
         return GenResult(
             ok=True, nex_path=nex_path, tree_path=tree_path,
             work_dir=work_dir, cli_args=cli_args, log=_log,
@@ -225,7 +209,6 @@ def generate_nex(params: ParamSpec | dict[str, Any], *, timeout: int = 120) -> G
             error_key="figtreekit_failed", error_detail=tail, log=log,
         )
 
-    _apply_label_color(nex_path, params.label_color)
     return GenResult(
         ok=True, nex_path=nex_path, tree_path=tree_path,
         work_dir=work_dir, cli_args=cli_args, log=log,

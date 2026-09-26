@@ -82,7 +82,10 @@ class TestGenerate:
         assert d["image"].startswith("data:image/png;base64,")
         assert len(d["image"]) > 1000  # base64 足够长
         assert "figtreekit" in d["command"]
-        assert "java -jar" in d["command"]
+        assert "--render" in d["command"]
+        # the record must render through the core so the appearance
+        # post-processing step is part of the replay
+        assert "java -jar" not in d["command"]
         assert d["config_json"]  # 非空
 
     def test_empty_tree(self, server_url):

@@ -41,7 +41,7 @@ class _StudioApi:
 
 
 def run_desktop(
-    host: str = "127.0.0.1",
+    host: str = "127.0.0.1", allow_remote_bind: bool = False,
     port: int | None = None,
     title: str = "FigTreeKit Studio",
     width: int = 1440,
@@ -57,8 +57,9 @@ def run_desktop(
     except Exception:
         return False
 
-    from figtreekit_studio.server import create_server
+    from figtreekit_studio.server import create_server, resolve_bind_host
 
+    host = resolve_bind_host(host, allow_remote=allow_remote_bind)
     if port is None:
         port = free_port(host)
 
