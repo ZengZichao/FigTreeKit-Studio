@@ -170,7 +170,7 @@ def render(
     ext = {"PNG": ".png", "PDF": ".pdf", "SVG": ".svg", "JPEG": ".jpg"}[fmt_upper]
     output_path = base + ext
 
-    from figtreekit._renderer import render_with_figtree
+    from figtreekit import render_with_figtree
     from figtreekit.exceptions import RenderError
 
     try:
