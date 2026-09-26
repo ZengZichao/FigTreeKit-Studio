@@ -31,7 +31,7 @@ pip install .
 
 The source archive is also downloadable at
 <https://github.com/ZengZichao/FigTreeKit-Studio/archive/refs/tags/v0.1.2.tar.gz>. This front end is
-archived on Zenodo: version DOI <https://doi.org/10.5281/zenodo.22766960> (v0.1.1), concept DOI
+archived on Zenodo: version DOI <https://doi.org/10.5281/zenodo.22977933> (v0.1.2), concept DOI
 <https://doi.org/10.5281/zenodo.22766959> (all versions). The core `figtreekit` package is archived
 separately.
 
@@ -254,7 +254,7 @@ FigTreeKit Studio is built on top of [`figtreekit`](https://pypi.org/project/fig
 - **Source code (core)**: https://github.com/ZengZichao/FigTreeKit
 - **Software DOI (version-specific)**: https://doi.org/10.5281/zenodo.22273864
 - **Software DOI (all versions)**: https://doi.org/10.5281/zenodo.22043258
-- **This front end on Zenodo**: https://doi.org/10.5281/zenodo.22766960 (v0.1.1;
+- **This front end on Zenodo**: https://doi.org/10.5281/zenodo.22977933 (v0.1.2;
   all versions https://doi.org/10.5281/zenodo.22766959)
 - **Preprint of the article describing it** (not the software citation):
   https://doi.org/10.64898/2026.08.27.747475
@@ -276,9 +276,9 @@ BibTeX:
   author = {Zeng, Zichao and Wang, Yinzhao},
   title = {FigTreeKit Studio},
   year = {2026},
-  version = {0.1.1},
+  version = {0.1.2},
   publisher = {Zenodo},
   url = {https://github.com/ZengZichao/FigTreeKit-Studio},
-  doi = {10.5281/zenodo.22766960}
+  doi = {10.5281/zenodo.22977933}
 }
 ```

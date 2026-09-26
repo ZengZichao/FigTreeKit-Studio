@@ -32,7 +32,7 @@ pip install .
 ```
 
 也可下载源码归档 <https://github.com/ZengZichao/FigTreeKit-Studio/archive/refs/tags/v0.1.2.tar.gz>。
-本前端已在 Zenodo 存档：版本 DOI <https://doi.org/10.5281/zenodo.22766960>（v0.1.1），
+本前端已在 Zenodo 存档：版本 DOI <https://doi.org/10.5281/zenodo.22977933>（v0.1.2），
 concept DOI <https://doi.org/10.5281/zenodo.22766959>（跨版本）。核心库 `figtreekit` 另行存档。
 
 **运行时依赖**：
@@ -260,7 +260,7 @@ FigTreeKit Studio 基于 [`figtreekit`](https://pypi.org/project/figtreekit/) �
 - **源代码（核心库）**：https://github.com/ZengZichao/FigTreeKit
 - **软件 DOI（指定版本）**：https://doi.org/10.5281/zenodo.22273864
 - **软件 DOI（跨版本 concept）**：https://doi.org/10.5281/zenodo.22043258
-- **本前端在 Zenodo 的存档**：https://doi.org/10.5281/zenodo.22766960（v0.1.1；
+- **本前端在 Zenodo 的存档**：https://doi.org/10.5281/zenodo.22977933（v0.1.2；
   跨版本 https://doi.org/10.5281/zenodo.22766959）
 - **描述性文章预印本**（不作为软件引用）：https://doi.org/10.64898/2026.08.27.747475
 
@@ -281,9 +281,9 @@ BibTeX：
   author = {Zeng, Zichao and Wang, Yinzhao},
   title = {FigTreeKit Studio},
   year = {2026},
-  version = {0.1.1},
+  version = {0.1.2},
   publisher = {Zenodo},
   url = {https://github.com/ZengZichao/FigTreeKit-Studio},
-  doi = {10.5281/zenodo.22766960}
+  doi = {10.5281/zenodo.22977933}
 }
 ```

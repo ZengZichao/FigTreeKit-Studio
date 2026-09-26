@@ -13,15 +13,18 @@ authors:
     affiliation: "State Key Laboratory of Microbial Metabolism, School of Life Sciences and Biotechnology, Shanghai Jiao Tong University, Shanghai 200240, China"
     email: wyz@sjtu.edu.cn
 type: software
-# Describes the most recent *published* release, so every DOI here resolves.
-# Bump version/date-released/doi together when the next tag is archived.
-version: "0.1.1"
-date-released: "2026-09-15"
-doi: "10.5281/zenodo.22766960"
+# Describes the most recent published release; every DOI here resolves.
+# Bump version/date-released/doi together at the next release.
+version: "0.1.2"
+date-released: "2026-09-26"
+doi: "10.5281/zenodo.22977933"
 identifiers:
   - type: doi
+    value: "10.5281/zenodo.22977933"
+    description: "Version-specific Zenodo DOI for release 0.1.2"
+  - type: doi
     value: "10.5281/zenodo.22766960"
-    description: "Version-specific Zenodo DOI for release 0.1.1"
+    description: "Version-specific Zenodo DOI for release 0.1.1 (superseded)"
   - type: doi
     value: "10.5281/zenodo.22766959"
     description: "Zenodo concept DOI (all releases)"
