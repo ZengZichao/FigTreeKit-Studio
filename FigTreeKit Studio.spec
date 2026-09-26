@@ -59,8 +59,8 @@ app = BUNDLE(
     info_plist={
         'CFBundleDisplayName': 'FigTreeKit Studio',
         'CFBundleName': 'FigTreeKit Studio',
-        'CFBundleShortVersionString': '0.1.1',
-        'CFBundleVersion': '0.1.1',
+        'CFBundleShortVersionString': '0.1.2',
+        'CFBundleVersion': '0.1.2',
         'NSHumanReadableCopyright': 'Copyright 2026 Zeng Zichao, GPL-2.0-or-later',
         'NSHighResolutionCapable': True,
         'LSMinimumSystemVersion': '10.15',

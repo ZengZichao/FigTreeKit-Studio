@@ -6,7 +6,7 @@ FigTreeKit Studio is the visual front-end for [`figtreekit`](https://pypi.org/pr
 
 [🇨🇳 中文](README.md) · 🇬🇧 English
 
-**v0.1.1 — Maintenance update**
+**v0.1.2 — Maintenance update**
 - 🖥️ **Standalone desktop app**: runs in a native window (pywebview), no browser required
 - 🌐 **Bilingual UI (Chinese / English)**: one-click switch (top-right `EN / 中文`), auto-remembered, defaults to system language on first launch
 - 🌿 **SVG vector logo**: minimalist black/white/grey phylogenetic tree (`static/logo.svg`), also used as the app icon
@@ -19,19 +19,32 @@ FigTreeKit Studio is the visual front-end for [`figtreekit`](https://pypi.org/pr
 
 ## Installation
 
+FigTreeKit Studio is **not published on PyPI**. Install it from this
+repository (the distribution name is `figtreekit-studio`, and it pulls in the
+`figtreekit` core automatically):
+
 ```bash
-pip install figtreekit-studio
+git clone https://github.com/ZengZichao/FigTreeKit-Studio.git
+cd FigTreeKit-Studio
+pip install .
 ```
+
+The source archive is also downloadable at
+<https://github.com/ZengZichao/FigTreeKit-Studio/archive/refs/tags/v0.1.1.tar.gz>. This front end is
+archived on Zenodo: version DOI <https://doi.org/10.5281/zenodo.22766960> (v0.1.1), concept DOI
+<https://doi.org/10.5281/zenodo.22766959> (all versions). The core `figtreekit` package is archived
+separately.
 
 **Runtime dependencies**:
 - Python 3.11+
-- Java 8+ (JRE/JDK, for rendering)
-- `figtreekit` 1.1.2+ (installed automatically)
+- Java 8 or later (JRE/JDK, for rendering; the version is reported by `java -version` and checked at startup)
+- `figtreekit[render]` 1.1.3+ (installed automatically; the `[render]` extra pulls in Pillow for the
+  post-render appearance pass)
 - `pywebview` 5.0+ (installed automatically, provides the native desktop window)
 
-Verified on macOS; Windows/Linux should be compatible in principle (the UI layer avoids native controls).
+Verified on macOS only (CI runs on macOS). The UI layer avoids native controls, so Windows and Linux are expected to work, but neither has been tested and no cross-platform support is claimed.
 
-> ⚠️ This project is in the Alpha stage (v0.1.1); APIs and UI may change across versions.
+> ⚠️ This project is in the Alpha stage (v0.1.2); APIs and UI may change across versions.
 
 ---
 
@@ -97,7 +110,7 @@ Corresponding JSON config (directly consumable by `figtreekit --config`):
 
 ## Features
 
-### Current version (v0.1.1)
+### Current version (v0.1.2)
 - ✅ Desktop app: native window, no browser dependency (pywebview / WKWebView)
 - ✅ Bilingual UI, one-click switch with memory
 - ✅ SVG vector logo (minimalist black/white/grey) + matching app icon
@@ -197,7 +210,7 @@ Output: `dist/FigTreeKit Studio.app` (with icon.icns, static, JAR). Alternative:
 ## Testing
 
 ```bash
-cd FigTreeKit-Studio-项目代码
+cd FigTreeKit-Studio
 pip install pytest
 python -m pytest tests/ -v
 ```
@@ -233,20 +246,39 @@ Issues and Pull Requests are welcome. Please ensure:
 
 FigTreeKit Studio is built on top of [`figtreekit`](https://pypi.org/project/figtreekit/). If you use FigTreeKit (or its visual front-end FigTreeKit Studio) in your research, please cite it:
 
-> Zeng Z. (2026). *FigTreeKit: A Python toolkit for programmatic FigTree styling, taxonomy-aware clade auditing, and phylogenetic tree rendering*. https://doi.org/10.64898/2026.08.27.747475
+> Zeng Z., Wang Y. (2026). *FigTreeKit: A Python toolkit for programmatic FigTree styling,
+> taxonomy-aware clade auditing, and phylogenetic tree rendering* (Version 1.1.2) [Computer software].
+> Zenodo. https://doi.org/10.5281/zenodo.22273864
 
-- **PyPI**: https://pypi.org/project/figtreekit/
-- **Source code**: https://github.com/ZengZichao/FigTreeKit
-- **DOI**: https://doi.org/10.64898/2026.08.27.747475
+- **PyPI (core)**: https://pypi.org/project/figtreekit/
+- **Source code (core)**: https://github.com/ZengZichao/FigTreeKit
+- **Software DOI (version-specific)**: https://doi.org/10.5281/zenodo.22273864
+- **Software DOI (all versions)**: https://doi.org/10.5281/zenodo.22043258
+- **This front end on Zenodo**: https://doi.org/10.5281/zenodo.22766960 (v0.1.1;
+  all versions https://doi.org/10.5281/zenodo.22766959)
+- **Preprint of the article describing it** (not the software citation):
+  https://doi.org/10.64898/2026.08.27.747475
 
 BibTeX:
 
 ```bibtex
 @software{figtreekit2026,
-  author = {Zeng, Zichao},
+  author = {Zeng, Zichao and Wang, Yinzhao},
   title = {FigTreeKit: A Python toolkit for programmatic FigTree styling, taxonomy-aware clade auditing, and phylogenetic tree rendering},
   year = {2026},
+  version = {1.1.2},
+  publisher = {Zenodo},
   url = {https://github.com/ZengZichao/FigTreeKit},
-  doi = {10.64898/2026.08.27.747475}
+  doi = {10.5281/zenodo.22273864}
+}
+
+@software{figtreekitstudio2026,
+  author = {Zeng, Zichao and Wang, Yinzhao},
+  title = {FigTreeKit Studio},
+  year = {2026},
+  version = {0.1.1},
+  publisher = {Zenodo},
+  url = {https://github.com/ZengZichao/FigTreeKit-Studio},
+  doi = {10.5281/zenodo.22766960}
 }
 ```

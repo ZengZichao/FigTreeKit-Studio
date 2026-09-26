@@ -45,3 +45,8 @@ htmlcov/
 
 # Misc
 *.log
+
+# Standalone A/B probe used once as audit evidence; it hard-codes a local path
+# to the sibling core checkout and is not part of the supported workflow. The
+# replay contract it exercised is covered by tests/test_exporter.py instead.
+tools/

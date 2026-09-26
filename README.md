@@ -8,7 +8,7 @@ FigTreeKit Studio 是 [`figtreekit`](https://pypi.org/project/figtreekit/) 的�
 
 [🇬🇧 English](README_EN.md) · 🇨🇳 中文
 
-**v0.1.1 维护更新**
+**v0.1.2 维护更新**
 - 🖥️ **独立桌面应用**：原生窗口运行（pywebview），不依赖浏览器
 - 🌐 **中英文双语界面**：一键切换（右上角 `EN / 中文`），自动记忆，首次按系统语言选择
 - 🌿 **SVG 矢量 Logo**：黑白灰配色的极简系统发育树（`static/logo.svg`），同步用作应用图标
@@ -22,19 +22,28 @@ FigTreeKit Studio 是 [`figtreekit`](https://pypi.org/project/figtreekit/) 的�
 
 ## 安装
 
+FigTreeKit Studio **未发布到 PyPI**，请从本仓库安装（分发包名为
+`figtreekit-studio`，会自动拉取核心库 `figtreekit`）：
+
 ```bash
-pip install figtreekit-studio
+git clone https://github.com/ZengZichao/FigTreeKit-Studio.git
+cd FigTreeKit-Studio
+pip install .
 ```
+
+也可下载源码归档 <https://github.com/ZengZichao/FigTreeKit-Studio/archive/refs/tags/v0.1.1.tar.gz>。
+本前端已在 Zenodo 存档：版本 DOI <https://doi.org/10.5281/zenodo.22766960>（v0.1.1），
+concept DOI <https://doi.org/10.5281/zenodo.22766959>（跨版本）。核心库 `figtreekit` 另行存档。
 
 **运行时依赖**：
 - Python 3.11+
-- Java 8+（JRE/JDK，用于渲染）
-- `figtreekit` 1.1.2+（自动安装）
+- Java 8 及以上（JRE/JDK，用于渲染；启动时读取并检查 `java -version` 报告的版本）
+- `figtreekit[render]` 1.1.3+（自动安装；`[render]` 提供渲染后外观处理所需的 Pillow）
 - `pywebview` 5.0+（自动安装，提供原生桌面窗口）
 
-macOS 验证通过；Windows/Linux 理论兼容（界面层规避原生控件）。
+仅在 macOS 上验证（CI 亦运行于 macOS）。界面层规避原生控件，Windows/Linux 预期可用，但均未实测，因此不作跨平台支持声明。
 
-> ⚠️ 本项目处于 Alpha 阶段（v0.1.1），API 和界面可能随版本迭代调整。
+> ⚠️ 本项目处于 Alpha 阶段（v0.1.2），API 和界面可能随版本迭代调整。
 
 ---
 
@@ -105,7 +114,7 @@ python -m figtreekit input.tre -o output.nex --force \
 
 ## 功能
 
-### 当前版本（v0.1.1）
+### 当前版本（v0.1.2）
 - ✅ 桌面应用：原生窗口，不依赖浏览器（pywebview / WKWebView）
 - ✅ 中英文双语界面，一键切换并记忆
 - ✅ SVG 矢量 Logo（黑白灰极简风）+ 同源应用图标
@@ -207,7 +216,7 @@ uv pip install --python .venv-build/bin/python pyinstaller pywebview "figtreekit
 ## 测试
 
 ```bash
-cd FigTreeKit-Studio-项目代码
+cd FigTreeKit-Studio
 pip install pytest
 python -m pytest tests/ -v
 ```
@@ -243,20 +252,38 @@ GPL-2.0-or-later（与 figtreekit 一致）。详见 [LICENSE](LICENSE)。
 
 FigTreeKit Studio 基于 [`figtreekit`](https://pypi.org/project/figtreekit/) 构建。若你在研究中使用了 FigTreeKit（或其可视化前端 FigTreeKit Studio），请引用：
 
-> Zeng Z. (2026). *FigTreeKit: A Python toolkit for programmatic FigTree styling, taxonomy-aware clade auditing, and phylogenetic tree rendering*. https://doi.org/10.64898/2026.08.27.747475
+> Zeng Z., Wang Y. (2026). *FigTreeKit: A Python toolkit for programmatic FigTree styling,
+> taxonomy-aware clade auditing, and phylogenetic tree rendering* (Version 1.1.2) [计算机程序].
+> Zenodo. https://doi.org/10.5281/zenodo.22273864
 
-- **PyPI**：https://pypi.org/project/figtreekit/
-- **源代码**：https://github.com/ZengZichao/FigTreeKit
-- **DOI**：https://doi.org/10.64898/2026.08.27.747475
+- **PyPI（核心库）**：https://pypi.org/project/figtreekit/
+- **源代码（核心库）**：https://github.com/ZengZichao/FigTreeKit
+- **软件 DOI（指定版本）**：https://doi.org/10.5281/zenodo.22273864
+- **软件 DOI（跨版本 concept）**：https://doi.org/10.5281/zenodo.22043258
+- **本前端在 Zenodo 的存档**：https://doi.org/10.5281/zenodo.22766960（v0.1.1；
+  跨版本 https://doi.org/10.5281/zenodo.22766959）
+- **描述性文章预印本**（不作为软件引用）：https://doi.org/10.64898/2026.08.27.747475
 
 BibTeX：
 
 ```bibtex
 @software{figtreekit2026,
-  author = {Zeng, Zichao},
+  author = {Zeng, Zichao and Wang, Yinzhao},
   title = {FigTreeKit: A Python toolkit for programmatic FigTree styling, taxonomy-aware clade auditing, and phylogenetic tree rendering},
   year = {2026},
+  version = {1.1.2},
+  publisher = {Zenodo},
   url = {https://github.com/ZengZichao/FigTreeKit},
-  doi = {10.64898/2026.08.27.747475}
+  doi = {10.5281/zenodo.22273864}
+}
+
+@software{figtreekitstudio2026,
+  author = {Zeng, Zichao and Wang, Yinzhao},
+  title = {FigTreeKit Studio},
+  year = {2026},
+  version = {0.1.1},
+  publisher = {Zenodo},
+  url = {https://github.com/ZengZichao/FigTreeKit-Studio},
+  doi = {10.5281/zenodo.22766960}
 }
 ```

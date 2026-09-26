@@ -2,12 +2,29 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 title: "FigTreeKit Studio: Visual front-end + reproducible script generator for figtreekit"
 authors:
-  - given-names: Zeng
-    family-names: Zichao
-    affiliation: "Zhejiang University"
+  - given-names: Zichao
+    family-names: Zeng
+    orcid: "https://orcid.org/0000-0001-6553-970X"
+    affiliation: "State Key Laboratory of Microbial Metabolism, School of Life Sciences and Biotechnology, Shanghai Jiao Tong University, Shanghai 200240, China"
+    email: zengzichao@sjtu.edu.cn
+  - given-names: Yinzhao
+    family-names: Wang
+    orcid: "https://orcid.org/0000-0001-8715-1386"
+    affiliation: "State Key Laboratory of Microbial Metabolism, School of Life Sciences and Biotechnology, Shanghai Jiao Tong University, Shanghai 200240, China"
+    email: wyz@sjtu.edu.cn
 type: software
-version: "0.1.0"
+# Describes the most recent *published* release, so every DOI here resolves.
+# Bump version/date-released/doi together when the next tag is archived.
+version: "0.1.1"
 date-released: "2026-09-15"
+doi: "10.5281/zenodo.22766960"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.22766960"
+    description: "Version-specific Zenodo DOI for release 0.1.1"
+  - type: doi
+    value: "10.5281/zenodo.22766959"
+    description: "Zenodo concept DOI (all releases)"
 license: GPL-2.0-or-later
 repository-code: "https://github.com/ZengZichao/FigTreeKit-Studio"
 keywords:
@@ -17,3 +34,5 @@ keywords:
   - tree
   - figtreekit
   - bioinformatics
+custom-content:
+  corresponding-author: "Yinzhao Wang (wyz@sjtu.edu.cn)"

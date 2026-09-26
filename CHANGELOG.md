@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - Unreleased
+
+### Fixed — pre-submission audit of the manuscript (JSE, 2026-09)
+
+- 渲染与配色全部下沉到 `figtreekit` 核心：删除 Studio 自己的位图重着色
+  （`core/renderer.py` 的 Pillow 通道）与事后改写 NEXUS 标签色的私有 API 调用
+  （`core/generator.py`）。前端因此确实不含自有样式逻辑。
+- 导出记录的渲染步骤改为 `figtreekit --render`（而非裸 `java -jar`），使导出的
+  命令行逐像素复现界面预览（由 `tests/test_exporter.py::TestReplayEquivalence` 断言：
+  重放导出的命令后，序列注释与渲染像素均与界面预览一致）。
+- 导出的命令行对 `#RRGGBB` 一类值做 shell 引号包裹，避免 `#` 被 shell 当注释而
+  丢参数。
+- `--host` 不再无校验透传：非回环绑定必须显式 `--allow-remote-bind`，并加测试。
+- WCAG AA 文本颜色令牌达标（`--mut`、`--accent`、`--line-strong`），加自动对比度
+  测试；修正 `style.css` 中与实测不符的注释。
+- `check_java()` 现在真正解析并强制 Java 版本下限（此前只判断 java 是否存在）。
+- `locate_jar()` 优先取核心库内的权威 JAR 副本，打包内副本降为回退，消除版本漂移方向。
+- CI 增加打包构建与 `--smoke-test` 自检两个步骤（此前该自检只是人工命令，
+  却被稿件写作 CI 行为）；`--smoke-test` 取消隐藏。
+- 工作目录改为按会话归拢（`ftk_session_<id>/run_<id>/`），与稿件“每次会话一个
+  专用子目录”的表述一致。
+- `LICENSE` 换为规范 GPL-2.0-or-later 全文（原为删节版，缺 “or later” 授权段）；
+  `CITATION.cff` 修正版本号、补全作者与单位。
+- README 安装路径改为可用的仓库安装方式（`pip install figtreekit-studio` 在 PyPI
+  不存在），补出仓库 URL；平台表述与 CI 实况一致（仅 macOS 验证）。
+
+### Tests
+- 82 → 100 项；新增回放等价、绑定地址、对比度、JAR 一致性与 Java 版本下限测试。
+
+> 待办：为 0.1.2 打 tag；Zenodo 会随 tag 自动产出该版本的存档 DOI，届时把
+> `CITATION.cff` 的 version/date-released/doi 一并提升。稿件若引用 0.1.2，须先完成本项。
+> 注：0.1.1 已在 Zenodo 存档（版本 DOI 10.5281/zenodo.22766960，
+> concept DOI 10.5281/zenodo.22766959）。
+
 ## [0.1.1] - 2026-09-15
 
 ### Added
