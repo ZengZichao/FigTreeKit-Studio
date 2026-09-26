@@ -8,7 +8,7 @@ FigTreeKit Studio 是 [`figtreekit`](https://pypi.org/project/figtreekit/) 的�
 
 [🇬🇧 English](README_EN.md) · 🇨🇳 中文
 
-**v0.1.2 维护更新**
+**v0.1.2（开发中，尚未发布）· 已发布的最新版本：v0.1.1**
 - 🖥️ **独立桌面应用**：原生窗口运行（pywebview），不依赖浏览器
 - 🌐 **中英文双语界面**：一键切换（右上角 `EN / 中文`），自动记忆，首次按系统语言选择
 - 🌿 **SVG 矢量 Logo**：黑白灰配色的极简系统发育树（`static/logo.svg`），同步用作应用图标
@@ -43,7 +43,8 @@ concept DOI <https://doi.org/10.5281/zenodo.22766959>（跨版本）。核心库
 
 仅在 macOS 上验证（CI 亦运行于 macOS）。界面层规避原生控件，Windows/Linux 预期可用，但均未实测，因此不作跨平台支持声明。
 
-> ⚠️ 本项目处于 Alpha 阶段（v0.1.2），API 和界面可能随版本迭代调整。
+> ⚠️ 本项目处于 Alpha 阶段，API 和界面可能随版本迭代调整。主干代码为 v0.1.2（未发布），
+> 已发布的最新 tagged 版本是 v0.1.1。
 
 ---
 
@@ -114,7 +115,7 @@ python -m figtreekit input.tre -o output.nex --force \
 
 ## 功能
 
-### 当前版本（v0.1.2）
+### 当前开发版本（v0.1.2，未发布）
 - ✅ 桌面应用：原生窗口，不依赖浏览器（pywebview / WKWebView）
 - ✅ 中英文双语界面，一键切换并记忆
 - ✅ SVG 矢量 Logo（黑白灰极简风）+ 同源应用图标
@@ -199,7 +200,7 @@ assets/
 ```bash
 # 1) 构建环境（Python 3.12 + PyInstaller + pywebview + figtreekit）
 uv venv --python 3.12 .venv-build
-uv pip install --python .venv-build/bin/python pyinstaller pywebview "figtreekit>=1.1.2"
+uv pip install --python .venv-build/bin/python pyinstaller pywebview "figtreekit[render]>=1.1.3"
 
 # 2) 打包
 .venv-build/bin/pyinstaller "FigTreeKit Studio.spec" --noconfirm --clean

@@ -6,7 +6,7 @@ FigTreeKit Studio is the visual front-end for [`figtreekit`](https://pypi.org/pr
 
 [🇨🇳 中文](README.md) · 🇬🇧 English
 
-**v0.1.2 — Maintenance update**
+**v0.1.2 (in development, not released) · latest published release: v0.1.1**
 - 🖥️ **Standalone desktop app**: runs in a native window (pywebview), no browser required
 - 🌐 **Bilingual UI (Chinese / English)**: one-click switch (top-right `EN / 中文`), auto-remembered, defaults to system language on first launch
 - 🌿 **SVG vector logo**: minimalist black/white/grey phylogenetic tree (`static/logo.svg`), also used as the app icon
@@ -44,7 +44,8 @@ separately.
 
 Verified on macOS only (CI runs on macOS). The UI layer avoids native controls, so Windows and Linux are expected to work, but neither has been tested and no cross-platform support is claimed.
 
-> ⚠️ This project is in the Alpha stage (v0.1.2); APIs and UI may change across versions.
+> ⚠️ This project is in the Alpha stage; APIs and UI may change across versions. The main
+> branch carries v0.1.2 (unreleased); the latest tagged release is v0.1.1.
 
 ---
 
@@ -110,7 +111,7 @@ Corresponding JSON config (directly consumable by `figtreekit --config`):
 
 ## Features
 
-### Current version (v0.1.2)
+### Current development version (v0.1.2, unreleased)
 - ✅ Desktop app: native window, no browser dependency (pywebview / WKWebView)
 - ✅ Bilingual UI, one-click switch with memory
 - ✅ SVG vector logo (minimalist black/white/grey) + matching app icon
@@ -194,7 +195,7 @@ assets/
 ```bash
 # 1) Build environment (Python 3.12 + PyInstaller + pywebview + figtreekit)
 uv venv --python 3.12 .venv-build
-uv pip install --python .venv-build/bin/python pyinstaller pywebview "figtreekit>=1.1.2"
+uv pip install --python .venv-build/bin/python pyinstaller pywebview "figtreekit[render]>=1.1.3"
 
 # 2) Package
 .venv-build/bin/pyinstaller "FigTreeKit Studio.spec" --noconfirm --clean
