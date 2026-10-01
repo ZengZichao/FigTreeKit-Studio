@@ -137,7 +137,7 @@ jobs:
         # 和 Makefile 各抄了一份而留下过期注释。单一事实来源，不要复制。
         run: |
           if [ "${{ matrix.python-version }}" = "3.12" ]; then
-            python -m pytest tests/ -v --cov --cov-report=term-missing --cov-report=xml
+            python -m pytest tests/ -v --cov --cov-report=term-missing
           else
             python -m pytest tests/ -v
           fi
