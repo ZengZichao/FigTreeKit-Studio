@@ -26,24 +26,29 @@ concurrency:
 # 升级方法：查 https://github.com/actions/runner-images#available-images
 # 确认新的 GA 标签后，同步替换 package job 的 runs-on。
 #
-# main 分支保护的 required_status_checks 与本工作流的 job 并不一一对应
+# main 分支保护的 required_status_checks 与本工作流的 job 一一对应
 # --------------------------------------------------------------------
-# 当前 required = [Lint, Test (py3.11), Test (py3.12)]，**不含** Package smoke test。
-# 原因：该 job 依赖 macOS runner，而本仓库的 macOS 配额长期不可得
-# （实测当日 30+ 个 run 中，该 job 一次都没被调度，in_progress 恒为 0）。
-# 把它列为 required 会让门禁永久无法通过。
+# required = [Lint, Test (py3.11), Test (py3.12), Package smoke test]
 #
-# 同时，测试必须**直接**出现在 required 里，不能只依赖
-# `package needs: test` 的传递链：一旦 package 从不运行，那条链就断了，
-# 单元测试失败反而挡不住合并。
+# 四个 job 的依赖链是 lint → test → package，因此 `Package smoke test`
+# 通过即意味着 lint 与两条测试腿都通过。四个全列为 required 是刻意的冗余：
+# 一旦将来有人改动 job 之间的 needs 关系，required 不会随之失效。
 #
-# 恢复 macOS 配额后，请把 "Package smoke test" 加回 required：
-#   gh api -X PUT repos/ZengZichao/FigTreeKit-Studio/branches/main/protection \
-#     -F 'required_status_checks[contexts][]=Lint' \
-#     -F 'required_status_checks[contexts][]=Test (py3.11)' \
-#     -F 'required_status_checks[contexts][]=Test (py3.12)' \
-#     -F 'required_status_checks[contexts][]=Package smoke test'
-# 在那之前，package job 仍会在每次 push 上运行并报告结果，只是不阻塞合并。
+# 历史记录（供后来者判断，不要重复踩）：
+#   2026-10-01 当日 macOS runner 配额一度完全不可得，Package smoke test 在
+#   30+ 个 run 中一次都没被调度（in_progress 恒为 0）。当时为避免门禁永久
+#   无法通过，临时把它移出 required。同日 07:53Z 配额恢复后该 job 一次跑通
+#   （11/11 步），已重新纳入 required。
+#
+#   若将来 macOS 配额再次耗尽导致该 job 长时间排队，**不要**把
+#   Test (py3.11) / Test (py3.12) 换成 Package smoke test 来「凑」一个能过的
+#   门禁 —— 那会让打包路径彻底失去门禁。正确做法是临时只保留 ubuntu 侧三项：
+#     gh api -X PUT repos/ZengZichao/FigTreeKit-Studio/branches/main/protection \
+#       -F 'required_status_checks[contexts][]=Lint' \
+#       -F 'required_status_checks[contexts][]=Test (py3.11)' \
+#       -F 'required_status_checks[contexts][]=Test (py3.12)'
+#   配额恢复后再把 Package smoke test 加回来。ubuntu 侧三条始终可满足，
+#   因此这种临时降级不会让门禁失效。
 
 # 默认 GITHUB_TOKEN 权限远宽于本工作流所需；这里显式收窄为只读。
 permissions:
