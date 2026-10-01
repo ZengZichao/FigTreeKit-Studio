@@ -171,3 +171,65 @@ class TestGuardItselfWorks:
         assert re.search(
             r'^\*\*v([0-9][^*]*?)\s*—\s*current release\*\*$', text, re.MULTILINE
         ) is None
+
+
+class TestLicenseFileStaysDetectable:
+    """LICENSE 必须保持 GPL v2 正文的逐字节原样，否则 GitHub 识别会失效。
+
+    踩过的坑：在 GPL 正文**之前**插入版权与 or-later 授权声明（出于好意，想让
+    授权更明确），本地一切正常，推送后 GitHub 的许可证识别（Licensee）直接
+    匹配失败：
+
+        改动前: "spdx_id": "GPL-2.0"
+        改动后: "spdx_id": "NOASSERTION"   ← 仓库页随之失去 license 徽章
+
+    这类回归**只在远程生效后**才暴露，本地任何校验都看不出来。版权与 or-later
+    授权声明改放 NOTICE（见 NOTICE 顶部），并由下面两条断言守住。
+
+    这里校验的是「GitHub 识别所依赖的结构特征」而不是整文件哈希：后者会把
+    任何对许可证正文的合法编辑也判成失败。
+    """
+
+    CANONICAL_FIRST_LINE = "                    GNU GENERAL PUBLIC LICENSE"
+    # 正文中段与尾部的特征行，用于确认这是完整、未被打断的 GPL-2.0 文本
+    MARKERS = (
+        "GNU GENERAL PUBLIC LICENSE",
+        "Version 2, June 1991",
+        "NO WARRANTY",
+        "END OF TERMS AND CONDITIONS",
+    )
+
+    def test_license_starts_with_the_canonical_gpl_header(self):
+        """首行必须是 GPL 正文自身的标题行，前面不能有任何自定义内容。"""
+        text = _read("LICENSE")
+        first = text.splitlines()[0]
+        assert first == self.CANONICAL_FIRST_LINE, (
+            f"LICENSE 首行为 {first!r}，期望 GPL v2 正文的标题行。\n"
+            "在正文前插入任何内容都会让 GitHub 的许可证识别退化到 NOASSERTION，"
+            "仓库页将失去 license 徽章。版权与 or-later 声明请放 NOTICE。"
+        )
+
+    def test_license_contains_full_uninterrupted_gpl_text(self):
+        text = _read("LICENSE")
+        missing = [m for m in self.MARKERS if m not in text]
+        assert not missing, f"LICENSE 缺少 GPL-2.0 正文的特征行：{missing}"
+
+    def test_or_later_grant_is_documented_in_notice(self):
+        """授权声明搬家了，但绝不能跟着一起丢。"""
+        # NOTICE 里的授权文本按 80 列折行，匹配前先归一化空白。
+        notice = " ".join(_read("NOTICE").split())
+        assert "or (at your option) any later version" in notice, (
+            "NOTICE 中缺少 or-later 授权声明；"
+            "它从 LICENSE 移到这里是有意为之，但不得丢失"
+        )
+        assert "Copyright" in notice and "Zeng Zichao" in notice, (
+            "NOTICE 中缺少版权声明"
+        )
+
+    def test_machine_readable_metadata_still_declares_or_later(self):
+        data = tomllib.loads(_read("pyproject.toml"))
+        assert data["project"]["license"] == "GPL-2.0-or-later", (
+            "pyproject.toml 未声明 or-later；LICENSE 是纯正文，"
+            "机器可读处的 or-later 声明是授权选择的权威来源"
+        )
+        assert "license: GPL-2.0-or-later" in _read("CITATION.cff")
