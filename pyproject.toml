@@ -68,10 +68,11 @@ source = ["figtreekit_studio"]
 branch = true
 
 [tool.coverage.report]
-# 低于此值即失败。设 65 是刻意贴着当前 67% 的实测值，
-# 目的是让覆盖率「不许跌」而非虚构一个够不到的门槛。
-# 已知未覆盖：desktop.py（0%，pywebview 窗口层）、cli.py（15%）、
-# core/generator.py（56%）。这些是真实缺口，不是门槛设得低。
-fail_under = 65
+# 低于此值即失败。当前实测 83%（本轮补齐 desktop.py 0->100%、cli.py 14->56%、
+# core/generator.py 56->96% 之后），门槛设在略低于实测的位置，作用是"不许跌"
+# 而非虚构一个够不到的数。留几个百分点余量是为了不因新增一个未测模块而误报。
+# 剩余未覆盖：_smoke_test（由 CI 的冻结包 --smoke-test 真实覆盖）、
+# server.py 的部分错误分支。
+fail_under = 78
 show_missing = true
 skip_covered = true
