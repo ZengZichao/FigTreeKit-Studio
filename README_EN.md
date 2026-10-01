@@ -115,7 +115,7 @@ Corresponding JSON config (directly consumable by `figtreekit --config`):
 
 ## Features
 
-### Current development version (v0.1.2, unreleased)
+### Current release (v0.1.2, tagged and archived 2026-09-26)
 - ✅ Desktop app: native window, no browser dependency (pywebview / WKWebView)
 - ✅ Bilingual UI, one-click switch with memory
 - ✅ SVG vector logo (minimalist black/white/grey) + matching app icon
