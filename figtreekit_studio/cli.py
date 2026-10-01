@@ -127,7 +127,9 @@ def main(argv=None):
         threading.Thread(target=_open_browser, daemon=True).start()
 
         from figtreekit_studio.server import serve
-        serve(host=args.host, port=port)
+        # allow_remote 必须透传：否则 `--browser --host 0.0.0.0 --allow-remote-bind`
+        # 会被 serve() 拒绝，而报错信息恰恰在叫用户补上这个他已经补了的参数。
+        serve(host=args.host, port=port, allow_remote=args.allow_remote_bind)
         return
 
     # --- 桌面窗口模式（默认，不依赖浏览器）---
@@ -144,7 +146,9 @@ def main(argv=None):
             target=lambda: (time.sleep(0.8), webbrowser.open(url)), daemon=True
         ).start()
         from figtreekit_studio.server import serve
-        serve(host=args.host, port=port)
+        # 与上面的 --browser 分支同理：allow_remote 必须透传，否则
+        # 「pywebview 不可用 + 用户显式给了 --allow-remote-bind」会被 serve 拒绝。
+        serve(host=args.host, port=port, allow_remote=args.allow_remote_bind)
 
 
 if __name__ == "__main__":
