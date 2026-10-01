@@ -55,11 +55,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Tests
 - 82 → 100 项；新增回放等价、绑定地址、对比度、JAR 一致性与 Java 版本下限测试。
 
-> 待办：为 0.1.2 打 tag；Zenodo 会随 tag 自动产出该版本的存档 DOI，届时把
-> `CITATION.cff` 的 version/date-released/doi 一并提升。任何外部文档若按版本号
-> 引用本前端，都应等该 tag 存在之后再引用。
-> 注：0.1.1 已在 Zenodo 存档（版本 DOI 10.5281/zenodo.22766960，
-> concept DOI 10.5281/zenodo.22766959）。
+> 已完成：0.1.2 已打 tag（`v0.1.2` → `c46e107`），Zenodo 随 tag 产出该版本的存档
+> DOI 10.5281/zenodo.22977933（concept DOI 10.5281/zenodo.22766959，跨版本），
+> `CITATION.cff` 的 version/date-released/doi 已同步提升，外部文档可按版本号引用。
+> 注：0.1.1 亦已在 Zenodo 存档（版本 DOI 10.5281/zenodo.22766960）。
 
 ## [0.1.1] - 2026-09-15
 
