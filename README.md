@@ -239,8 +239,10 @@ make check          # 静态检查 + 全部测试
 | 端到端 | 启动 server → POST Newick → 返回合法 PNG base64 |
 | 端到端 | 冻结包内 `--smoke-test` 跑通完整生成链（CI 中执行） |
 
-CI 覆盖 Python 3.11 与 3.12（与 `requires-python = ">=3.11"` 一致），
-静态检查在 Ubuntu 上跑，测试与打包在 macOS 上跑。
+CI 覆盖 Python 3.11 与 3.12（与 `requires-python = ">=3.11"` 一致）。
+静态检查与单元测试跑在 Ubuntu 上——被测代码没有 macOS 专属分支，且公开仓库的
+Linux runner 免费而 macOS runner 按 10x 倍率计费；只有 PyInstaller 打包与
+冻结包自检留在 macOS 上。
 
 ---
 

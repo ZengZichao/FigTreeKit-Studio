@@ -235,7 +235,10 @@ while the build still looks green.
 | E2E | frozen bundle `--smoke-test` runs the full generation chain (in CI) |
 
 CI covers Python 3.11 and 3.12 (matching `requires-python = ">=3.11"`).
-Static checks run on Ubuntu; tests and packaging run on macOS.
+Static checks and the unit/integration tests run on Ubuntu — the code under test
+has no macOS-specific branches, and Linux runners are free for public repos
+while macOS runners are billed at 10x. Only the PyInstaller bundle and its
+frozen-bundle self-check run on macOS.
 
 ---
 

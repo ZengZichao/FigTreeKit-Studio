@@ -31,8 +31,22 @@ permissions:
   contents: read
 
 jobs:
-  # lint 跑在 ubuntu-latest：公开仓库的 Linux runner 免费，
-  # 而 macOS runner 按 10x 倍率计费。纯静态检查没有必须在 macOS 上跑的理由。
+  # lint 与 test 都跑在 ubuntu-latest，只有 package 留在 macOS。
+  #
+  # 理由一（成本）：公开仓库的 Linux runner 免费，macOS runner 按 10x 倍率计费。
+  #   此前三个 job 全在 macOS，等于把本可免费跑的静态检查与单元测试也按 10x 付费。
+  # 理由二（可调度）：macOS runner 池容量远小于 Linux，2026-10-01 实测本仓库的
+  #   macOS job 排队 3 分钟仍拿不到 runner，而 ubuntu 侧正常调度。把测试移出
+  #   macOS 同时解决了「门禁跑不起来」和「配额被 3 倍放大」两个问题。
+  # 理由三（测试本身可移植）：被测代码没有任何 macOS 专属分支 ——
+  #   `grep -rE "darwin|platform\.system|sys\.platform|/Users/" figtreekit_studio/ tests/`
+  #   无命中；pywebview 是纯 Python wheel（py3-none-any），figtreekit 的依赖
+  #   （biopython / pillow / numpy）均有 Linux wheel；渲染所需的 Java 由
+  #   setup-java 的 temurin 提供，与 FigTree JAR 本身跨平台。
+  #
+  # 唯一真正依赖 macOS 的是 PyInstaller 打出的 .app 及其自检，那部分由
+  # `package` job 在 macOS 上承担——它对 macOS 环境的验证强度高于把单元测试
+  # 在 macOS 上再跑一遍（冻结包内跑完整生成链）。
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -58,7 +72,9 @@ jobs:
   test:
     name: Test (py${{ matrix.python-version }})
     needs: lint
-    runs-on: macos-26
+    # 跑在 Linux：被测代码无 macOS 专属分支，且公开仓库的 Linux runner 免费。
+    # 详见 jobs 上方注释。macOS 侧的验证由 package job 承担。
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
       fail-fast: false
@@ -100,6 +116,8 @@ jobs:
             python -m pytest tests/ -v
           fi
 
+  # 唯一真正需要 macOS 的 job：PyInstaller 打 .app 并在冻结包内跑完整生成链。
+  # 它对 macOS 运行环境的验证强度高于把单元测试在 macOS 上再跑一遍。
   package:
     name: Package smoke test
     needs: test
