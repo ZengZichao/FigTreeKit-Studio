@@ -26,7 +26,7 @@ lint:  ## 静态检查（语法错误 + 未定义名）
 check: lint test  ## 提交前必跑：静态检查 + 全部测试
 	@echo "✓ lint 与测试均通过"
 
-coverage:  ## 跑测试并输出覆盖率（门槛 fail_under=65 见 pyproject.toml）
+coverage:  ## 跑测试并输出覆盖率（门槛数值见 pyproject.toml [tool.coverage.report]）
 	$(PYTHON) -m pytest tests/ --cov --cov-report=term-missing
 
 run:  ## 启动应用（原生窗口）

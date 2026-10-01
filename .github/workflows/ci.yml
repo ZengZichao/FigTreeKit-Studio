@@ -24,7 +24,26 @@ concurrency:
 # 钉当前 GA 既有可复现性，又没有退役倒计时。
 #
 # 升级方法：查 https://github.com/actions/runner-images#available-images
-# 确认新的 GA 标签后，同步替换下面两处。
+# 确认新的 GA 标签后，同步替换 package job 的 runs-on。
+#
+# main 分支保护的 required_status_checks 与本工作流的 job 并不一一对应
+# --------------------------------------------------------------------
+# 当前 required = [Lint, Test (py3.11), Test (py3.12)]，**不含** Package smoke test。
+# 原因：该 job 依赖 macOS runner，而本仓库的 macOS 配额长期不可得
+# （实测当日 30+ 个 run 中，该 job 一次都没被调度，in_progress 恒为 0）。
+# 把它列为 required 会让门禁永久无法通过。
+#
+# 同时，测试必须**直接**出现在 required 里，不能只依赖
+# `package needs: test` 的传递链：一旦 package 从不运行，那条链就断了，
+# 单元测试失败反而挡不住合并。
+#
+# 恢复 macOS 配额后，请把 "Package smoke test" 加回 required：
+#   gh api -X PUT repos/ZengZichao/FigTreeKit-Studio/branches/main/protection \
+#     -F 'required_status_checks[contexts][]=Lint' \
+#     -F 'required_status_checks[contexts][]=Test (py3.11)' \
+#     -F 'required_status_checks[contexts][]=Test (py3.12)' \
+#     -F 'required_status_checks[contexts][]=Package smoke test'
+# 在那之前，package job 仍会在每次 push 上运行并报告结果，只是不阻塞合并。
 
 # 默认 GITHUB_TOKEN 权限远宽于本工作流所需；这里显式收窄为只读。
 permissions:
@@ -108,7 +127,9 @@ jobs:
 
       - name: Run tests
         # 覆盖率只在 3.12 这条腿上采集一次，避免重复计算与重复上传。
-        # fail_under=65 定义在 pyproject.toml [tool.coverage.report]。
+        # 门槛数值**只**定义在 pyproject.toml 的 [tool.coverage.report]。
+        # 此处刻意不抄写那个数字：上一轮把门槛从 65 提到 78 时就因为这里
+        # 和 Makefile 各抄了一份而留下过期注释。单一事实来源，不要复制。
         run: |
           if [ "${{ matrix.python-version }}" = "3.12" ]; then
             python -m pytest tests/ -v --cov --cov-report=term-missing --cov-report=xml

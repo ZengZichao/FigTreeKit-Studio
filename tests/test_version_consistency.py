@@ -233,3 +233,38 @@ class TestLicenseFileStaysDetectable:
             "机器可读处的 or-later 声明是授权选择的权威来源"
         )
         assert "license: GPL-2.0-or-later" in _read("CITATION.cff")
+
+
+class TestCoverageThresholdHasSingleSource:
+    """覆盖率门槛的数值只能出现在 pyproject.toml 一处。
+
+    实际踩过：把门槛从 65 提到 78 时只改了 pyproject.toml，ci.yml 与 Makefile
+    的注释里各抄了一份 65，两处就此变成过期文档。注释里的数字不会报错、不会
+    测试、也没人会去核对——恰恰因此最容易长期烂掉。
+    """
+
+    # 这些文件里如果出现 fail_under（含注释），就说明有人在别处复制了门槛数值
+    OTHER_PLACES = [
+        "Makefile",
+        ".github/workflows/ci.yml",
+        ".github/workflows/release.yml",
+        "README.md",
+        "README_EN.md",
+        "CONTRIBUTING.md",
+        ".github/pull_request_template.md",
+    ]
+
+    def test_threshold_number_is_not_copied_elsewhere(self):
+        offenders = [f for f in self.OTHER_PLACES
+                     if (ROOT / f).is_file() and "fail_under" in _read(f)]
+        assert not offenders, (
+            f"这些文件里出现了 fail_under：{offenders}。"
+            "门槛数值只能写在 pyproject.toml [tool.coverage.report]；"
+            "其他位置请只指向它，不要抄写数字。"
+        )
+
+    def test_pyproject_actually_defines_the_threshold(self):
+        data = tomllib.loads(_read("pyproject.toml"))
+        assert "fail_under" in data["tool"]["coverage"]["report"], (
+            "pyproject.toml 是门槛的唯一事实来源，请勿删除该字段"
+        )
