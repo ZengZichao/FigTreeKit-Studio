@@ -2,7 +2,8 @@
 renderer — .nex → PNG/PDF/SVG/JPEG（java -jar）
 
 封装 ``java -jar figtree_patched.jar -graphic <FORMAT> -width W -height H <input.nex> <output>`` 调用，
-超时保护（默认 180s）。JAR 优先使用包内分发版本，回退到 figtreekit 包内 JAR。
+超时保护（默认 180s）。JAR 优先使用 figtreekit 核心包内的权威副本，回退到 Studio 包内
+随包分发的副本。
 """
 
 from __future__ import annotations
@@ -25,10 +26,13 @@ def locate_jar() -> str:
 
     优先级：
     1. figtreekit 包内 figtree_patched.jar（权威副本，与被审的渲染行为同源）
-    2. Studio 包内 data/figtree_patched.jar（仅用于冻结打包；两份副本的
-       SHA-256 一致，由 tests/test_hardening 之外的 packaging 校验保证）
+    2. Studio 包内 data/figtree_patched.jar（仅用于核心库未安装时的回退，
+       例如冻结打包产物的首次启动）
 
     先取核心库副本，可避免核心更新后 Studio 仍用旧 JAR 渲染而产生行为漂移。
+    两份副本的 SHA-256 一致性由 tests/test_hardening.py::
+    TestBundledJarIsNotDrifted::test_fallback_jar_matches_the_core_jar 断言，
+    该用例在 CI strict 模式下不会静默跳过。
     """
     # 1) figtreekit 包内（权威）
     try:
