@@ -12,6 +12,20 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# runner 镜像说明
+# --------------------
+# 测试与打包钉在 macos-26（= actions/runner-images 的当前 GA，macOS 26 Arm64）
+# 而不是 macos-latest。理由：
+#   * macos-latest 是移动目标，会在 macOS 大版本切换时无预警改变本仓库的
+#     构建环境（此前就是 macos-latest）；
+#   * 但也不钉 macos-15 —— 它是上一代 Arm64 镜像，按 GitHub 的退役政策
+#     （最多支持 2 个 GA，新 GA 发布后开始退役最旧的），macOS 26 转 GA 后
+#     macos-15 就进入退役流程，容量会被优先抽走，job 会长时间排队甚至排不到。
+# 钉当前 GA 既有可复现性，又没有退役倒计时。
+#
+# 升级方法：查 https://github.com/actions/runner-images#available-images
+# 确认新的 GA 标签后，同步替换下面两处。
+
 # 默认 GITHUB_TOKEN 权限远宽于本工作流所需；这里显式收窄为只读。
 permissions:
   contents: read
@@ -44,7 +58,7 @@ jobs:
   test:
     name: Test (py${{ matrix.python-version }})
     needs: lint
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 30
     strategy:
       fail-fast: false
@@ -89,7 +103,7 @@ jobs:
   package:
     name: Package smoke test
     needs: test
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 40
     steps:
       - name: Checkout repository
