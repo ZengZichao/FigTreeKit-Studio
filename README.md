@@ -1,5 +1,10 @@
 # FigTreeKit Studio
 
+[![CI](https://github.com/ZengZichao/FigTreeKit-Studio/actions/workflows/ci.yml/badge.svg)](https://github.com/ZengZichao/FigTreeKit-Studio/actions/workflows/ci.yml)
+[![License: GPL-2.0-or-later](https://img.shields.io/badge/License-GPL--2.0--or--later-blue.svg)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
+[![Stage: Alpha](https://img.shields.io/badge/stage-alpha-orange.svg)](#)
+
 > 桌面应用 · 可视化调参 · 实时预览 · 可复现脚本导出
 
 FigTreeKit Studio 是 [`figtreekit`](https://pypi.org/project/figtreekit/) 的可视化前端。
@@ -217,49 +222,81 @@ uv pip install --python .venv-build/bin/python pyinstaller pywebview "figtreekit
 
 ```bash
 cd FigTreeKit-Studio
-pip install pytest
-python -m pytest tests/ -v
+pip install -e ".[dev]"
+make check          # 静态检查 + 全部测试
 ```
+
+`make test-strict` 会以 CI 的严格模式运行：**出现任何被跳过的用例即判失败**。
+这是有意为之——静默跳过等于什么都没验却显示通过。
 
 | 层级 | 内容 |
 |------|------|
 | 单元 | `params.to_cli_args` / `to_config_dict` 映射正确 |
 | 单元 | exporter 与 generator 共用同一映射（无漂移） |
 | 单元 | renderer JAR 缺失/超时错误处理 |
+| 单元 | 两份 `figtree_patched.jar` 副本的 SHA-256 一致（防漂移） |
 | 静态 | logo.svg / i18n 词典 / 页面 data-i18n 完整性 |
 | 端到端 | 启动 server → POST Newick → 返回合法 PNG base64 |
+| 端到端 | 冻结包内 `--smoke-test` 跑通完整生成链（CI 中执行） |
+
+CI 覆盖 Python 3.11 与 3.12（与 `requires-python = ">=3.11"` 一致），
+静态检查在 Ubuntu 上跑，测试与打包在 macOS 上跑。
 
 ---
 
 ## 许可证
 
-GPL-2.0-or-later（与 figtreekit 一致）。详见 [LICENSE](LICENSE)。
+本项目以 **GPL-2.0-or-later** 授权。详见 [LICENSE](LICENSE)。
 
-内嵌 `figtree_patched.jar` 衍生自 FigTree v1.4.4（GPL-2.0-or-later），含 iText（AGPL-3.0）。
+### ⚠️ 第三方组件的授权冲突（尚未解决）
+
+仓库中随包分发的 `figtree_patched.jar` 内含 **iText（AGPL-3.0）**。
+AGPL-3.0 与 GPL-2.0 不兼容，这一点**尚未有明确结论**。
+
+完整的第三方组件清单、该 JAR 的 SHA-256 指纹、以及冲突的可选处理方向见
+[NOTICE](NOTICE)。在完成复核前，请勿将本项目产物用于对外分发。
+
+> 另注：README 此前称该 JAR 衍生自 "FigTree（GPL-2.0-or-later）"，
+> 但 JAR 内随附的 LICENSE 文件实为 Apache-2.0，且 FigTree 上游的许可证
+> 尚未能核实。`NOTICE` 中已记录这一不一致。
+
+---
+
+## 安全
+
+发现安全问题请勿开公开 Issue，参见 [SECURITY.md](SECURITY.md)。
 
 ---
 
 ## 贡献
 
-欢迎提交 Issue 和 Pull Request。请确保：
-- 提交前运行 `python -m pytest tests/ -v` 且全部通过
+欢迎提交 Issue 和 Pull Request。使用 PR 模板中的清单，请确保：
+- 提交前运行 `make check` 且全部通过
 - 遵循现有的代码风格（Python: `from __future__ import annotations`；JS: vanilla, 无构建步骤）
 - 不修改 `params.to_cli_args` 的单一事实来源设计
+- 引入或修改第三方组件时同步更新 `NOTICE`
 
 ---
 
 ## 引用 / Citation
 
-FigTreeKit Studio 基于 [`figtreekit`](https://pypi.org/project/figtreekit/) 构建。若你在研究中使用了 FigTreeKit（或其可视化前端 FigTreeKit Studio），请引用：
+FigTreeKit Studio 基于 [`figtreekit`](https://pypi.org/project/figtreekit/) 构建。若你在研究中使用了 FigTreeKit（或其可视化前端 FigTreeKit Studio），请引用**你实际使用的那个 `figtreekit` 版本**：
 
 > Zeng Z., Wang Y. (2026). *FigTreeKit: A Python toolkit for programmatic FigTree styling,
-> taxonomy-aware clade auditing, and phylogenetic tree rendering* (Version 1.1.2) [计算机程序].
-> Zenodo. https://doi.org/10.5281/zenodo.22273864
+> taxonomy-aware clade auditing, and phylogenetic tree rendering* (Version ⟨填你实际使用的版本⟩) [计算机程序].
+> Zenodo. https://doi.org/10.5281/zenodo.⟨对应的版本 DOI⟩
+
+> ⚠️ **维护者注意（待处理）**：本段此前硬编码为 `Version 1.1.2` +
+> `10.5281/zenodo.22273864`，但 `pyproject.toml` 的依赖下限已是
+> `figtreekit[render]>=1.1.3`（实测解析到 1.1.4）。版本号与版本 DOI 必须成对
+> 核对后一起更新——只改其一即产生错误引用。此处不代填，因为无法核实
+> 1.1.3/1.1.4 各自的 Zenodo DOI。
 
 - **PyPI（核心库）**：https://pypi.org/project/figtreekit/
 - **源代码（核心库）**：https://github.com/ZengZichao/FigTreeKit
-- **软件 DOI（指定版本）**：https://doi.org/10.5281/zenodo.22273864
-- **软件 DOI（跨版本 concept）**：https://doi.org/10.5281/zenodo.22043258
+- **软件 DOI（concept，跨版本）**：https://doi.org/10.5281/zenodo.22043258
+- **本前端（Zenodo）**：https://doi.org/10.5281/zenodo.22977933（v0.1.2）；
+  concept DOI https://doi.org/10.5281/zenodo.22766959
 - **本前端在 Zenodo 的存档**：https://doi.org/10.5281/zenodo.22977933（v0.1.2；
   跨版本 https://doi.org/10.5281/zenodo.22766959）
 - **描述性文章预印本**（不作为软件引用）：https://doi.org/10.64898/2026.08.27.747475
@@ -275,6 +312,8 @@ BibTeX：
   publisher = {Zenodo},
   url = {https://github.com/ZengZichao/FigTreeKit},
   doi = {10.5281/zenodo.22273864}
+  % TODO(维护者): 上面的 version 与 doi 必须成对更新为实际使用的 figtreekit
+  % 版本（当前依赖下限为 >=1.1.3）。概念 DOI 10.5281/zenodo.22043258 始终有效。
 }
 
 @software{figtreekitstudio2026,

@@ -1,5 +1,10 @@
 # FigTreeKit Studio
 
+[![CI](https://github.com/ZengZichao/FigTreeKit-Studio/actions/workflows/ci.yml/badge.svg)](https://github.com/ZengZichao/FigTreeKit-Studio/actions/workflows/ci.yml)
+[![License: GPL-2.0-or-later](https://img.shields.io/badge/License-GPL--2.0--or--later-blue.svg)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
+[![Stage: Alpha](https://img.shields.io/badge/stage-alpha-orange.svg)](#)
+
 > Desktop app · Visual parameter tuning · Live preview · Reproducible script export
 
 FigTreeKit Studio is the visual front-end for [`figtreekit`](https://pypi.org/project/figtreekit/). It provides a graphical interface for parameter tuning, live PNG preview, equivalent CLI commands, and JSON configuration export, enabling non-programming biologists and reviewers to quickly style phylogenetic trees while preserving full reproducibility.
@@ -211,51 +216,86 @@ Output: `dist/FigTreeKit Studio.app` (with icon.icns, static, JAR). Alternative:
 
 ```bash
 cd FigTreeKit-Studio
-pip install pytest
-python -m pytest tests/ -v
+pip install -e ".[dev]"
+make check          # static checks + full test suite
 ```
+
+`make test-strict` runs in the same strict mode as CI: **any skipped test
+fails the run**. This is deliberate — a silent skip means nothing was verified
+while the build still looks green.
 
 | Layer | Content |
 |------|------|
 | Unit | `params.to_cli_args` / `to_config_dict` mapping correct |
 | Unit | exporter and generator share the same mapping (no drift) |
 | Unit | renderer JAR missing/timeout error handling |
+| Unit | the two shipped `figtree_patched.jar` copies are byte-identical (drift guard) |
 | Static | logo.svg / i18n dictionary / page data-i18n completeness |
 | E2E | start server → POST Newick → return valid PNG base64 |
+| E2E | frozen bundle `--smoke-test` runs the full generation chain (in CI) |
+
+CI covers Python 3.11 and 3.12 (matching `requires-python = ">=3.11"`).
+Static checks run on Ubuntu; tests and packaging run on macOS.
 
 ---
 
 ## License
 
-GPL-2.0-or-later (same as figtreekit). See [LICENSE](LICENSE).
+This project is licensed under **GPL-2.0-or-later**. See [LICENSE](LICENSE).
 
-The bundled `figtree_patched.jar` is derived from FigTree v1.4.4 (GPL-2.0-or-later) and includes iText (AGPL-3.0).
+### ⚠️ Unresolved third-party license conflict
+
+The bundled `figtree_patched.jar` contains **iText under AGPL-3.0**.
+AGPL-3.0 and GPL-2.0 are not compatible, and **this has not been resolved**.
+
+See [NOTICE](NOTICE) for the full third-party inventory, the JAR's SHA-256
+fingerprint, and the possible directions for resolving the conflict.
+Do not distribute artifacts from this repository until that review is done.
+
+> Additionally, this README previously described the JAR as derived from
+> "FigTree (GPL-2.0-or-later)", but the LICENSE files shipped inside the JAR
+> are Apache-2.0, and FigTree's upstream license could not be verified.
+> `NOTICE` records this discrepancy.
+
+---
+
+## Security
+
+Please do not open a public issue for security problems. See
+[SECURITY.md](SECURITY.md).
 
 ---
 
 ## Contributing
 
-Issues and Pull Requests are welcome. Please ensure:
-- Run `python -m pytest tests/ -v` before submitting and all tests pass
+Issues and Pull Requests are welcome. Use the PR template checklist and ensure:
+- Run `make check` before submitting and all checks pass
 - Follow the existing code style (Python: `from __future__ import annotations`; JS: vanilla, no build step)
 - Do not modify the single source of truth design of `params.to_cli_args`
+- Update `NOTICE` if you add or modify a third-party component
 
 ---
 
 ## Citation
 
-FigTreeKit Studio is built on top of [`figtreekit`](https://pypi.org/project/figtreekit/). If you use FigTreeKit (or its visual front-end FigTreeKit Studio) in your research, please cite it:
+FigTreeKit Studio is built on top of [`figtreekit`](https://pypi.org/project/figtreekit/). If you use FigTreeKit (or its visual front-end FigTreeKit Studio) in your research, please cite **the `figtreekit` version you actually used**:
 
 > Zeng Z., Wang Y. (2026). *FigTreeKit: A Python toolkit for programmatic FigTree styling,
-> taxonomy-aware clade auditing, and phylogenetic tree rendering* (Version 1.1.2) [Computer software].
-> Zenodo. https://doi.org/10.5281/zenodo.22273864
+> taxonomy-aware clade auditing, and phylogenetic tree rendering* (Version ⟨the version you used⟩) [Computer software].
+> Zenodo. https://doi.org/10.5281/zenodo.⟨matching version DOI⟩
+
+> ⚠️ **Maintainer note (action needed)**: this section previously hard-coded
+> `Version 1.1.2` with `10.5281/zenodo.22273864`, but the dependency floor in
+> `pyproject.toml` is now `figtreekit[render]>=1.1.3` (resolves to 1.1.4 in
+> practice). Version number and version DOI must be updated **as a pair** —
+> changing one alone produces a wrong citation. Left as placeholders because
+> the per-version Zenodo DOIs for 1.1.3/1.1.4 could not be verified.
 
 - **PyPI (core)**: https://pypi.org/project/figtreekit/
 - **Source code (core)**: https://github.com/ZengZichao/FigTreeKit
-- **Software DOI (version-specific)**: https://doi.org/10.5281/zenodo.22273864
 - **Software DOI (all versions)**: https://doi.org/10.5281/zenodo.22043258
-- **This front end on Zenodo**: https://doi.org/10.5281/zenodo.22977933 (v0.1.2;
-  all versions https://doi.org/10.5281/zenodo.22766959)
+- **This front end on Zenodo**: https://doi.org/10.5281/zenodo.22977933 (v0.1.2);
+  all versions https://doi.org/10.5281/zenodo.22766959
 - **Preprint of the article describing it** (not the software citation):
   https://doi.org/10.64898/2026.08.27.747475
 
@@ -270,6 +310,8 @@ BibTeX:
   publisher = {Zenodo},
   url = {https://github.com/ZengZichao/FigTreeKit},
   doi = {10.5281/zenodo.22273864}
+  % TODO(维护者): 上面的 version 与 doi 必须成对更新为实际使用的 figtreekit
+  % 版本（当前依赖下限为 >=1.1.3）。概念 DOI 10.5281/zenodo.22043258 始终有效。
 }
 
 @software{figtreekitstudio2026,

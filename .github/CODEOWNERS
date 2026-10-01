@@ -1,0 +1,22 @@
+# 代码评审归属
+#
+# 本仓库当前由单一维护者维护，因此 CODEOWNERS 的作用不是"请求他人评审"，
+# 而是让 main 的分支保护在语义上明确：改动这些路径时必须有人（维护者本人）
+# 显式确认过。
+#
+# 若要真正启用强制评审，请同时在 main 的分支保护里打开
+# "Require review from Code Owners"。
+
+* @ZengZichao
+
+# 渲染后端与打包产物：授权与字节一致性风险最高
+/figtreekit_studio/data/            @ZengZichao
+/figtreekit_studio/core/            @ZengZichao
+/FigTreeKit Studio.spec             @ZengZichao
+
+# 授权与合规
+/LICENSE                            @ZengZichao
+/NOTICE                             @ZengZichao
+
+# CI 与门禁配置
+/.github/                           @ZengZichao

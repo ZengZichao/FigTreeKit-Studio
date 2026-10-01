@@ -1,0 +1,100 @@
+# NOTICE
+
+本文件记录 FigTreeKit Studio 自身不创作、但随产物一同分发的第三方组件，
+以满足各上游许可证对「随附声明 / NOTICE」的要求。
+
+本项目自身的授权见 [LICENSE](LICENSE)（GPL-2.0-or-later）。
+
+---
+
+## 1. 需要人工复核的授权冲突（重要）
+
+**本仓库随 `figtree_patched.jar` 分发的 iText 采用 AGPL-3.0，而本项目声明为
+GPL-2.0-or-later。这两者不在同一条 GPL 版本线上，AGPL-3.0 与 GPL-2.0
+不兼容。**
+
+这是本仓库目前最需要法务判断的一条，本文件不代为下结论。可选方向（仅供参考，
+不是建议，也未验证其在 FigTree 实际使用方式下是否成立）：
+
+- 若判定组合分发不成立，则需换用非 AGPL 授权的 iText 构建，或移除该 JAR；
+- 若判定成立，则本项目的对外授权需相应调整，并评估 AGPL 对网络服务条款的适用。
+
+**在下述复核完成前，请勿将本仓库的产物用于对外分发。**
+
+复核时应一并确认：`figtree_patched.jar` 是在何种场景下被打包进本项目
+（见第 2 节），以及该场景是否构成 AGPL 所指的"使用网络服务"。
+
+---
+
+## 2. 随 JAR 一起分发的二进制
+
+仓库中提交了一份预编译的渲染后端：
+
+| 项 | 值 |
+|---|---|
+| 路径 | `figtreekit_studio/data/figtree_patched.jar` |
+| 大小 | 3,626,291 字节 |
+| SHA-256 | `13ba6b28335ec815dedab37d98da01e7a8e89ad997eea1ac38db62c55c7fd892` |
+| 构建信息（JAR manifest） | `Main-Class: figtree.application.FigTreeApplication`；`Built-By: zengzichao`；`Created-By: 25.0.2 (Homebrew)`；`Ant-Version: Apache Ant 1.10.17` |
+
+**这份 JAR 的打补丁过程没有在本仓库内留下可复现的生成脚本。** 换言之，
+当前无法仅凭本仓库从上游源码重新产出同一份字节。这是与本项目
+"可复现性优先"主张之间的一处已知缺口。
+
+它在本项目中的角色是**回退副本**：`figtreekit_studio/core/renderer.py` 的
+`locate_jar()` 优先使用 `figtreekit` 核心包内的那份权威 JAR，只有在核心库
+未安装时（例如冻结打包产物的首次启动）才回退到这份。两份副本的 SHA-256 一致性
+由 `tests/test_hardening.py::TestBundledJarIsNotDrifted` 断言。
+
+---
+
+## 3. JAR 内包含的第三方组件
+
+以下清单来自对 `figtree_patched.jar` 内容的直接检查（包路径与 JAR 内随附的
+许可证文本），**不依赖任何外部资料**：
+
+### 3.1 iText — AGPL-3.0（+ Section 15 附加授权）
+
+- 包路径：`com.itextpdf.text.**`（共 513 个条目）
+- 版权：1T3XT（Bruno Lowagie 等）
+- JAR 内随附：`com/itextpdf/text/AGPL.txt`（GNU AGPL v3 全文）、
+  `com/itextpdf/text/LICENSE.txt`、`com/itextpdf/text/NOTICE.txt`
+- `LICENSE.txt` 所载条款为 AGPL-3.0，并附有 1T3XT 依 Section 7(a) 加入
+  Section 15 的非侵权免责声明。
+- iText 的确切版本号**未能**从 JAR 中确定（未找到版本标记）。
+
+### 3.2 Apache Batik — Apache License 2.0
+
+- 包路径：`org.apache.batik.**`
+- 版权：1999-2007 The Apache Software Foundation
+- JAR 内随附：`META-INF/NOTICE`（Apache Batik 声明）
+
+该 NOTICE 另声明其包含：W3C 的 DOM API 与 SVG DTD 相关代码；ISO 关于文档中
+字符实体的定义。
+
+### 3.3 Apache XML Commons xml-apis — Apache License 2.0
+
+- 包路径：`org.apache.xmlcommons.**` 等
+- 版权：2006 The Apache Software Foundation
+- JAR 内随附：`license/NOTICE`（Apache License 2.0 第 4(d) 条对应声明）
+
+该 NOTICE 另声明其中部分内容最初来自：IBM Corporation (1999)、
+Sun Microsystems (1999)、W3C (2000)。
+
+### 3.4 FigTree — 上游许可证待核实
+
+- 包路径：`figtree.**`、`jam.**`
+- README 此前称其"衍生自 FigTree v1.4.4（GPL-2.0-or-later）"，
+  但本 JAR 内随附的 `license/LICENSE` 与 `META-INF/LICENSE` 实际均为
+  **Apache License 2.0** 文本。
+- **本次修复未能核实 FigTree 上游项目的许可证**（GitHub API 限流，
+  上游仓库 master 分支下未找到 `LICENSE` 文件），因此不对 FigTree 的
+  许可证下结论。上表两处说法不一致，需以 FigTree 上游项目为准核实后
+  修正本文件与 README。
+
+---
+
+## 4. 新增或修改第三方代码时的要求
+
+任何触及上述组件的改动，请同步更新本文件，并保持第 2 节的 SHA-256 与体积
+与实际文件一致。
