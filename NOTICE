@@ -1,9 +1,42 @@
 # NOTICE
 
-本文件记录 FigTreeKit Studio 自身不创作、但随产物一同分发的第三方组件，
-以满足各上游许可证对「随附声明 / NOTICE」的要求。
+## 本项目的授权
 
-本项目自身的授权见 [LICENSE](LICENSE)（GPL-2.0-or-later）。
+```
+FigTreeKit Studio — visual front-end + reproducible script generator for figtreekit
+Copyright (C) 2026 Zeng Zichao and contributors
+
+This program is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation; either version 2 of the License, or (at your option) any later
+version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc., 51 Franklin
+Street, Fifth Floor, Boston, MA 02110-1301 USA.
+```
+
+即 **GPL-2.0-or-later**（授权选择 "or later"）。
+
+> **为什么这段声明不在 [LICENSE](LICENSE) 前面？**
+> [LICENSE](LICENSE) 保持 GNU GPL v2 正文的**逐字节原样**。一旦在正文之前插入
+> 任何额外内容，GitHub 的许可证自动识别就会失败——仓库的 `spdx_id` 会从
+> `GPL-2.0` 退化成 `NOASSERTION`，仓库页随之失去 license 徽章。
+> （本仓库在 0.1.2 之后的一次改动中实测踩中过这个坑，已回退。）
+> 因此版权与 or-later 授权声明放在这里；`LICENSE` 只承载许可证正文。
+> 机器可读处同样声明了 or-later：`pyproject.toml` 的 `license = "GPL-2.0-or-later"`
+> 与 `CITATION.cff` 的 `license: GPL-2.0-or-later`。
+> 注意 GitHub 的许可证列表只提供 `gpl-2.0`、**不提供** `gpl-2.0-or-later` 变体，
+> 所以仓库徽章显示 GPL-2.0 属预期，不代表授权被降级。
+
+## 第三方组件
+
+本文件同时记录 FigTreeKit Studio 自身不创作、但随产物一同分发的第三方组件，
+以满足各上游许可证对「随附声明 / NOTICE」的要求。
 
 ---
 
