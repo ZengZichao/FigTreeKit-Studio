@@ -10,8 +10,24 @@ version = "0.1.2"
 description = "Visual front-end + reproducible script generator for figtreekit"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = ["figtreekit[render]>=1.1.3", "pywebview>=5.0"]
-optional-dependencies = { dev = ["pytest>=8.0", "pytest-cov>=5.0", "ruff>=0.16.9"] }
+# 依赖一律带上界。上界的作用是挡住「静默的主版本跳跃」：
+# 本项目不发布到 PyPI（见 README），不存在与其他包做依赖求解的顾虑，
+# 因此上界不会给使用方带来冲突，反而把升级变成维护者的一次显式决定。
+#
+# 实测过的例子：`pywebview>=5.0` 曾解析到 6.2.1。pywebview 6.x 的
+# `webview.start()` / `create_file_dialog()` 正是 core/desktop.py 依赖的 API，
+# 而这条路径只被冻结包的 `--smoke-test` 覆盖（单元测试注入的是假 webview 模块），
+# 一旦 macOS runner 不可用就失去防线。上界把这类风险挡在安装阶段。
+#
+# 为什么不用 lockfile / constraints.txt：Dependabot 的 pip 生态只认
+# requirements.txt、pyproject.toml、Pipfile、poetry.lock 等，它**不会**维护
+# 随意的 constraints 文件——那会变成一个悄悄过期、再也没人更新的坑。
+# 上界留在 pyproject.toml 里，Dependabot 依然能正常管理。
+dependencies = [
+    "figtreekit[render]>=1.1.3,<2.0",
+    "pywebview>=5.0,<7.0",
+]
+optional-dependencies = { dev = ["pytest>=8.0,<10", "pytest-cov>=5.0", "ruff>=0.16.9,<0.17"] }
 license = "GPL-2.0-or-later"
 license-files = ["LICENSE"]
 authors = [{ name = "Zeng Zichao" }]
