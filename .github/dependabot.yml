@@ -15,11 +15,15 @@ updates:
     # 按升级幅度分组，而不是像原先那样用 patterns: ["*"] 把 patch 与 minor
     # 全塞进同一个 PR：那样任一传递依赖坏掉就会连带堵住其余全部升级。
     # major 已在上面 ignore，因此这里只需处理 patch 与 minor 两档。
+    #
+    # 注意两处 update-types 的取值格式不同，混用会被 Dependabot 直接拒收：
+    #   ignore[].update-types  用完整形式 "version-update:semver-major"
+    #   groups.<name>.update-types 用短形式     "patch" / "minor" / "major"
     groups:
       pip-patch:
-        update-types: ["version-update:semver-patch"]
+        update-types: ["patch"]
       pip-minor:
-        update-types: ["version-update:semver-minor"]
+        update-types: ["minor"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
