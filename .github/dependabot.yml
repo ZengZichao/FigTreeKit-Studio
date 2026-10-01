@@ -12,14 +12,20 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
+    # 按升级幅度分组，而不是像原先那样用 patterns: ["*"] 把 patch 与 minor
+    # 全塞进同一个 PR：那样任一传递依赖坏掉就会连带堵住其余全部升级。
+    # major 已在上面 ignore，因此这里只需处理 patch 与 minor 两档。
     groups:
-      all-pip-bumps:
-        patterns:
-          - "*"
+      pip-patch:
+        update-types: ["version-update:semver-patch"]
+      pip-minor:
+        update-types: ["version-update:semver-minor"]
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 5
     commit-message:
       prefix: "chore(ci)"
     # 屏蔽 major 升级：action 跨大版本会更换 Node 运行时
@@ -28,3 +34,9 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
+    # 本仓库的 action 均已按 commit SHA 钉死（见 workflows/ci.yml），
+    # Dependabot 依据 SHA 后的 `# vX.Y.Z` 注释识别版本并改写 SHA 与注释。
+    # 三个 action 只在同一个工作流里协同使用，合并为一个 PR 便于整体回归。
+    groups:
+      github-actions:
+        patterns: ["*"]

@@ -28,6 +28,7 @@ Thumbs.db
 # Testing
 .pytest_cache/
 .coverage
+coverage.xml
 htmlcov/
 .mypy_cache/
 .ruff_cache/
@@ -46,7 +47,10 @@ htmlcov/
 # Misc
 *.log
 
-# Standalone A/B probe used once as audit evidence; it hard-codes a local path
-# to the sibling core checkout and is not part of the supported workflow. The
-# replay contract it exercised is covered by tests/test_exporter.py instead.
-tools/
+# 一次性审计脚本的落地位置。历史上这里放过一个硬编码了本机
+# figtreekit 兄弟仓库路径的 A/B 探针，它不属于受支持的工作流，
+# 其验证的契约已由 tests/test_exporter.py 覆盖。
+#
+# 这里只忽略该探针目录本身，而不是整个 tools/ —— 整目录忽略会让将来
+# 新增的正式工具脚本被 git 静默跳过，这类问题很难被发现。
+tools/_ab_probe/
