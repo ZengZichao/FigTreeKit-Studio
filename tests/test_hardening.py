@@ -13,6 +13,7 @@ import tempfile
 import pytest
 
 from figtreekit_studio.server import LOOPBACK_HOSTS, resolve_bind_host
+from tests.conftest import require
 
 STATIC = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                       "figtreekit_studio", "static")
@@ -108,18 +109,25 @@ class TestBundledJarIsNotDrifted:
     """Studio may ship a fallback JAR, but it must be byte-identical to the
     authoritative copy in the core package."""
 
+    @pytest.mark.requires_jar
     def test_fallback_jar_matches_the_core_jar(self):
         import hashlib
         import figtreekit
         core = os.path.join(os.path.dirname(os.path.abspath(figtreekit.__file__)),
                             "figtree_patched.jar")
         fallback = os.path.join(os.path.dirname(STATIC), "data", "figtree_patched.jar")
-        if not (os.path.exists(core) and os.path.exists(fallback)):
-            pytest.skip("core or fallback JAR not installed")
+        # 这一条是「两份 JAR 未漂移」的唯一防线，绝不能静默跳过：
+        # 一旦 skip，JAR 漂移就能悄无声息地进入发布产物。
+        require(
+            os.path.exists(core) and os.path.exists(fallback),
+            "核心库或回退 JAR 缺失：core={} fallback={}".format(
+                os.path.exists(core), os.path.exists(fallback)),
+        )
         h = lambda p: hashlib.sha256(open(p, "rb").read()).hexdigest()
         assert h(core) == h(fallback), (
             "the two shipped copies of figtree_patched.jar have drifted")
 
+    @pytest.mark.requires_jar
     def test_core_copy_is_preferred(self):
         import figtreekit
         from figtreekit_studio.core.renderer import locate_jar

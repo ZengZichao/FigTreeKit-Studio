@@ -9,6 +9,7 @@ from figtreekit_studio.core.params import (
     to_config_dict,
     to_config_json,
 )
+from tests.conftest import require
 
 
 # --------------------------------------------------------------------------- #
@@ -210,9 +211,10 @@ class TestConfigKeySchema:
         """to_config_dict 产出的所有键必须存在于 figtreekit schema 中。"""
         try:
             from figtreekit._defaults import get_figtree_defaults
-            defaults = get_figtree_defaults()
-        except Exception:
-            pytest.skip("figtreekit not available for schema check")
+        except ImportError as exc:  # 核心库未安装，或版本不提供该模块
+            require(False, f"figtreekit._defaults 不可用：{exc}")
+            raise  # require() 必定终止（strict 下失败，本地下跳过）
+        defaults = get_figtree_defaults()
         keys = set()
         for category, params in defaults.items():
             for param in params:

@@ -12,6 +12,7 @@ from PIL import Image
 from figtreekit_studio.core.renderer import render, locate_jar, check_java, RenderResult
 from figtreekit_studio.core.generator import generate_nex
 from figtreekit_studio.core.params import ParamSpec
+from tests.conftest import require
 
 
 SIMPLE_TREE = "((A:0.1,B:0.2):0.3,(C:0.4,D:0.5):0.6);"
@@ -22,8 +23,9 @@ def nex_file():
     """生成一个 .nex 供渲染测试。"""
     p = ParamSpec(tree_text=SIMPLE_TREE, layout="rectilinear", tip_labels="show")
     r = generate_nex(p)
-    if not r.ok:
-        pytest.skip(f"无法生成 .nex: {r.error}")
+    # 这里的 skip 会让整个渲染套件（9 个用例）集体消失并让 CI 变绿，
+    # 属于最危险的一种失败：什么都没验却显示通过。strict 模式下改为失败。
+    require(r.ok, f"无法生成 .nex，渲染套件将整体失效：{r.error}")
     return r.nex_path
 
 
@@ -35,8 +37,7 @@ def nex_file_with_label_color():
         label_color="#0000FF",
     )
     r = generate_nex(p)
-    if not r.ok:
-        pytest.skip(f"无法生成 .nex: {r.error}")
+    require(r.ok, f"无法生成 .nex，渲染套件将整体失效：{r.error}")
     return r.nex_path
 
 
