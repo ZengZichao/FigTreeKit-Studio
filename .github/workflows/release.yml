@@ -1,0 +1,97 @@
+name: Release
+
+# 手动打 tag 触发：`git tag v0.1.3 && git push origin v0.1.3`
+#
+# 本工作流刻意只做两件事：**校验** 与 **建 Release**。
+#
+# 为什么不做「自动改版本号」：版本号目前分散硬编码在 7 个文件
+# （pyproject / __init__.py / CITATION.cff / CHANGELOG / 两个 README / .spec /
+# setup_py2app.py）。自动同步它们正是本仓库最脆弱的一环——漏改任何一个都不会
+# 有任何提示。正确做法是把一致性变成**发版时的硬门禁**：
+#   * 下面的 verify 步骤会跑 tests/test_version_consistency.py；
+#   * 并额外比对 tag 与包内 __version__ 是否一致；
+# 任一不一致直接让 Release 失败，而不是发出一个半对的版本。
+#
+# 为什么不在这里构建/上传 .app：
+#   * 打 .app 需要 macOS runner，而本仓库的 macOS 配额长期紧张（实测排队数十分钟
+#     拿不到 runner），放进 Release 流程会让发版被基础设施卡住；
+#   * 归档发布走 Zenodo（概念 DOI + 版本 DOI），需要维护者的 Zenodo 凭据，
+#     属于人工步骤，不适合自动化；
+#   * 打包产物本身已由 CI 的 `Package smoke test` job 在每次 push 上验证过
+#     （PyInstaller 构建 + 冻结包内 --smoke-test 完整生成链）。
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: Verify and publish release
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write   # 建 Release 需要；其余步骤仍按需最小化
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Set up Java
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Tag must match the packaged version
+        # 这是发版时最关键的一条：tag 写错（例如打成 v0.1.4 而包里其实是 0.1.2）
+        # 会让 Zenodo 归档与代码对不上，且事后极难发现。
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          VERSION=$(python -c "import figtreekit_studio; print(figtreekit_studio.__version__)")
+          echo "tag     = $TAG"
+          echo "package = $VERSION"
+          if [ "$TAG" != "v$VERSION" ]; then
+            echo "::error::tag ${TAG} 与包内版本 ${VERSION} 不一致。"
+            echo "::error::请把 pyproject.toml / __init__.py / CITATION.cff / CHANGELOG /"
+            echo "::error::两个 README / .spec / setup_py2app.py 一并改到 ${VERSION} 再打 tag。"
+            exit 1
+          fi
+
+      - name: Version metadata must be consistent across the repo
+        # tests/test_version_consistency.py 覆盖 pyproject / CITATION.cff /
+        # CHANGELOG 条目与日期 / 两个 README 标称版本 / 两个打包配置的 CFBundle 版本。
+        run: python -m pytest tests/test_version_consistency.py -v
+
+      - name: Lint
+        run: ruff check --no-cache .
+
+      - name: Full test suite
+        env:
+          FIGTREEKIT_STUDIO_STRICT_TESTS: '1'
+        run: python -m pytest tests/ -v
+
+      - name: Create GitHub Release
+        # 用 runner 自带的 gh CLI，不引入额外 action（也就无需再钉一个 SHA）。
+        # --verify-tag：拒绝为不存在的 tag 建 Release。
+        # --generate-notes：变更日志由 GitHub 依据 PR 自动生成，
+        #   避免与手写的 CHANGELOG.md 双轨维护而互相漂移。
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            --verify-tag \
+            --generate-notes \
+            --title "FigTreeKit Studio ${GITHUB_REF_NAME}"
