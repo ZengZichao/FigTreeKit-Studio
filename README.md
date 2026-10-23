@@ -4,6 +4,7 @@
 [![License: GPL-2.0-or-later](https://img.shields.io/badge/License-GPL--2.0--or--later-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
 [![Stage: Alpha](https://img.shields.io/badge/stage-alpha-orange.svg)](#)
+[![ORCID](https://img.shields.io/badge/ORCID-0000--0001--6553--970X-a6ce39?logo=orcid&logoColor=white)](https://orcid.org/0000-0001-6553-970X)
 
 > 桌面应用 · 可视化调参 · 实时预览 · 可复现脚本导出
 
